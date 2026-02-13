@@ -1,0 +1,40 @@
+g: int
+volatile gf: float := 2.0
+
+class Point {
+x: int
+volatile y: float := 1.5
+
+sum(a: int, b: int): int {
+print(a + b)
+return a + b
+}
+}
+
+main(): int {
+x: int := 0
+a: int[] := int[1,2,3]
+
+print(a.length)
+print(a[1])
+
+x := x + 1
+x + 5
+
+if (x = 1) {
+print(111)
+} else {
+print(222)
+}
+
+for (i: int := 0, i < 3, i := i + 1) {
+print(i)
+continue
+}
+
+read(a[0])
+print(a[0])
+
+return 0
+}
+
