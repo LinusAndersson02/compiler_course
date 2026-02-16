@@ -399,6 +399,8 @@ namespace yy {
       // stmt_list
       // stmt_end
       // stmt
+      // stmt_body
+      // stmt_nb
       // for_init_opt
       // for_init
       // for_cond_opt
@@ -407,9 +409,6 @@ namespace yy {
       // type
       // base_type
       // array_opt
-      // lvalue
-      // lvalue_tail_list
-      // lvalue_tail
       // expr
       // expr_or
       // expr_and
@@ -649,29 +648,28 @@ namespace yy {
         S_stmt_list = 66,                        // stmt_list
         S_stmt_end = 67,                         // stmt_end
         S_stmt = 68,                             // stmt
-        S_for_init_opt = 69,                     // for_init_opt
-        S_for_init = 70,                         // for_init
-        S_for_cond_opt = 71,                     // for_cond_opt
-        S_var_decl = 72,                         // var_decl
-        S_opt_init = 73,                         // opt_init
-        S_type = 74,                             // type
-        S_base_type = 75,                        // base_type
-        S_array_opt = 76,                        // array_opt
-        S_lvalue = 77,                           // lvalue
-        S_lvalue_tail_list = 78,                 // lvalue_tail_list
-        S_lvalue_tail = 79,                      // lvalue_tail
-        S_expr = 80,                             // expr
-        S_expr_or = 81,                          // expr_or
-        S_expr_and = 82,                         // expr_and
-        S_expr_cmp = 83,                         // expr_cmp
-        S_expr_add = 84,                         // expr_add
-        S_expr_mul = 85,                         // expr_mul
-        S_expr_pow = 86,                         // expr_pow
-        S_expr_unary = 87,                       // expr_unary
-        S_expr_postfix = 88,                     // expr_postfix
-        S_primary = 89,                          // primary
-        S_args_opt = 90,                         // args_opt
-        S_args = 91                              // args
+        S_stmt_body = 69,                        // stmt_body
+        S_stmt_nb = 70,                          // stmt_nb
+        S_for_init_opt = 71,                     // for_init_opt
+        S_for_init = 72,                         // for_init
+        S_for_cond_opt = 73,                     // for_cond_opt
+        S_var_decl = 74,                         // var_decl
+        S_opt_init = 75,                         // opt_init
+        S_type = 76,                             // type
+        S_base_type = 77,                        // base_type
+        S_array_opt = 78,                        // array_opt
+        S_expr = 79,                             // expr
+        S_expr_or = 80,                          // expr_or
+        S_expr_and = 81,                         // expr_and
+        S_expr_cmp = 82,                         // expr_cmp
+        S_expr_add = 83,                         // expr_add
+        S_expr_mul = 84,                         // expr_mul
+        S_expr_pow = 85,                         // expr_pow
+        S_expr_unary = 86,                       // expr_unary
+        S_expr_postfix = 87,                     // expr_postfix
+        S_primary = 88,                          // primary
+        S_args_opt = 89,                         // args_opt
+        S_args = 90                              // args
       };
     };
 
@@ -723,6 +721,8 @@ namespace yy {
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_end: // stmt_end
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_body: // stmt_body
+      case symbol_kind::S_stmt_nb: // stmt_nb
       case symbol_kind::S_for_init_opt: // for_init_opt
       case symbol_kind::S_for_init: // for_init
       case symbol_kind::S_for_cond_opt: // for_cond_opt
@@ -731,9 +731,6 @@ namespace yy {
       case symbol_kind::S_type: // type
       case symbol_kind::S_base_type: // base_type
       case symbol_kind::S_array_opt: // array_opt
-      case symbol_kind::S_lvalue: // lvalue
-      case symbol_kind::S_lvalue_tail_list: // lvalue_tail_list
-      case symbol_kind::S_lvalue_tail: // lvalue_tail
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or: // expr_or
       case symbol_kind::S_expr_and: // expr_and
@@ -884,6 +881,8 @@ switch (yykind)
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_end: // stmt_end
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_body: // stmt_body
+      case symbol_kind::S_stmt_nb: // stmt_nb
       case symbol_kind::S_for_init_opt: // for_init_opt
       case symbol_kind::S_for_init: // for_init
       case symbol_kind::S_for_cond_opt: // for_cond_opt
@@ -892,9 +891,6 @@ switch (yykind)
       case symbol_kind::S_type: // type
       case symbol_kind::S_base_type: // base_type
       case symbol_kind::S_array_opt: // array_opt
-      case symbol_kind::S_lvalue: // lvalue
-      case symbol_kind::S_lvalue_tail_list: // lvalue_tail_list
-      case symbol_kind::S_lvalue_tail: // lvalue_tail
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or: // expr_or
       case symbol_kind::S_expr_and: // expr_and
@@ -2200,9 +2196,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 227,     ///< Last index in yytable_.
-      yynnts_ = 41,  ///< Number of nonterminal symbols.
-      yyfinal_ = 3 ///< Termination state number.
+      yylast_ = 266,     ///< Last index in yytable_.
+      yynnts_ = 40,  ///< Number of nonterminal symbols.
+      yyfinal_ = 6 ///< Termination state number.
     };
 
 
@@ -2287,6 +2283,8 @@ switch (yykind)
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_end: // stmt_end
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_body: // stmt_body
+      case symbol_kind::S_stmt_nb: // stmt_nb
       case symbol_kind::S_for_init_opt: // for_init_opt
       case symbol_kind::S_for_init: // for_init
       case symbol_kind::S_for_cond_opt: // for_cond_opt
@@ -2295,9 +2293,6 @@ switch (yykind)
       case symbol_kind::S_type: // type
       case symbol_kind::S_base_type: // base_type
       case symbol_kind::S_array_opt: // array_opt
-      case symbol_kind::S_lvalue: // lvalue
-      case symbol_kind::S_lvalue_tail_list: // lvalue_tail_list
-      case symbol_kind::S_lvalue_tail: // lvalue_tail
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or: // expr_or
       case symbol_kind::S_expr_and: // expr_and
@@ -2410,6 +2405,8 @@ switch (yykind)
       case symbol_kind::S_stmt_list: // stmt_list
       case symbol_kind::S_stmt_end: // stmt_end
       case symbol_kind::S_stmt: // stmt
+      case symbol_kind::S_stmt_body: // stmt_body
+      case symbol_kind::S_stmt_nb: // stmt_nb
       case symbol_kind::S_for_init_opt: // for_init_opt
       case symbol_kind::S_for_init: // for_init
       case symbol_kind::S_for_cond_opt: // for_cond_opt
@@ -2418,9 +2415,6 @@ switch (yykind)
       case symbol_kind::S_type: // type
       case symbol_kind::S_base_type: // base_type
       case symbol_kind::S_array_opt: // array_opt
-      case symbol_kind::S_lvalue: // lvalue
-      case symbol_kind::S_lvalue_tail_list: // lvalue_tail_list
-      case symbol_kind::S_lvalue_tail: // lvalue_tail
       case symbol_kind::S_expr: // expr
       case symbol_kind::S_expr_or: // expr_or
       case symbol_kind::S_expr_and: // expr_and
@@ -2550,7 +2544,7 @@ switch (yykind)
 
 
 } // yy
-#line 2554 "parser.tab.hh"
+#line 2548 "parser.tab.hh"
 
 
 

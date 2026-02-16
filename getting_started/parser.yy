@@ -20,6 +20,7 @@
   Node* root;
   extern int yylineno;
 
+  
   static Node* mk(const std::string& t, const std::string& v="") {
     return new Node(t, v, yylineno);
   }
@@ -81,8 +82,7 @@
 	entry
 	var_decl opt_init
 	type base_type array_opt
-	stmt stmt_list stmt_block stmt_end
-	lvalue lvalue_tail_list lvalue_tail
+	stmt stmt_body stmt_nb stmt_list stmt_block stmt_end
 	expr expr_or expr_and expr_cmp expr_add expr_mul expr_pow expr_unary expr_postfix primary
 	args_opt args
 	for_init_opt for_init for_cond_opt
@@ -93,11 +93,21 @@
 program
   :  global_var_list class_list entry opt_newlines END
   {
-    root = mk("Progam");
+    root = mk("Program");
     root -> children.push_back($1);
     root -> children.push_back($2);
     root -> children.push_back($3);
     }
+  | stmt_block opt_newlines END
+  {
+    root = mk("Program");
+    root->children.push_back(mk("Globals"));
+    root->children.push_back(mk("Classes"));
+    Node* e = mk("Entry");
+    e->children.push_back(mk("ReturnType","int"));
+    e->children.push_back($1);
+    root->children.push_back(e);
+  }
   ;
 
 global_var_list
@@ -135,21 +145,20 @@ class_member_list
 	| class_member_list class_member { $$ = $1; $$->children.push_back($2); }
 	;
 
+
 class_member
   : ID class_member_tail
     {
       if ($2->type == "ClassVar") {
-        Node* vd = $2->children.front(); 
-
+        Node* vd = $2->children.front();
         auto it = vd->children.begin();
-        ++it;                
-        (*it)->value = $1;  
+        ++it;
+        (*it)->value = $1;
       }
       else if ($2->type == "MethodDecl") {
         Node* idNode = $2->children.front();
         idNode->value = $1;
       }
-
       $$ = $2;
     }
   | VOLATILE ID COLON type opt_init stmt_end
@@ -159,8 +168,20 @@ class_member
       vd->children.push_back(mk("Id", $2));
       vd->children.push_back($4);
       if ($5) vd->children.push_back($5);
-
       $$ = mk1("ClassVar", vd);
+    }
+  | type ID LP param_list_opt RP
+    stmt_block
+    {
+      /* Allow type-first method declarations inside classes so semantic tests parse:
+         e.g. int aFunc() { ... } */
+      $$ = mk("MethodDecl");
+      $$->children.push_back(mk("Id", $2));
+      $$->children.push_back($4);
+      Node* rt = mk("ReturnType");
+      rt->children.push_back($1);
+      $$->children.push_back(rt);
+      $$->children.push_back($6);
     }
   ;
 
@@ -172,20 +193,32 @@ class_member_tail
       vd->children.push_back(mk("Id", ""));  /* placeholder; will be overwritten */
       vd->children.push_back($2);
       if ($3) vd->children.push_back($3);
-
       $$ = mk1("ClassVar", vd);
     }
-  | LP param_list_opt RP COLON type stmt_block
+  | COLON type LP param_list_opt RP
+    stmt_block
     {
       $$ = mk("MethodDecl");
       $$->children.push_back(mk("Id", ""));   /* placeholder; will be overwritten */
-      $$->children.push_back($2);             
+      $$->children.push_back($4);
       Node* rt = mk("ReturnType");
-      rt->children.push_back($5);            
+      rt->children.push_back($2);
       $$->children.push_back(rt);
-      $$->children.push_back($6);            
+      $$->children.push_back($6);
+    }
+  | LP param_list_opt RP COLON type
+    stmt_block
+    {
+      $$ = mk("MethodDecl");
+      $$->children.push_back(mk("Id", ""));   /* placeholder; will be overwritten */
+      $$->children.push_back($2);
+      Node* rt = mk("ReturnType");
+      rt->children.push_back($5);
+      $$->children.push_back(rt);
+      $$->children.push_back($6);
     }
   ;
+
 
 param_list_opt
   : /* empty */ { $$ = mk("Params"); }
@@ -229,23 +262,34 @@ stmt_end
   ;
 
 stmt
-  : stmt_block { $$ = $1; }
-  | var_decl stmt_end { $$ = mk1("VarStmt", $1); }
-  | lvalue ASSIGN expr stmt_end { $$ = mk3("AssignStmt", $1, mk("Op", ":="), $3); }
+  : stmt_block stmt_end { $$ = $1; }   /* standalone block requires stmt_end */
+  | stmt_nb { $$ = $1; }
+  ;
+
+stmt_body
+  : stmt_block { $$ = $1; }           /* block as body (no stmt_end here) */
+  | stmt_nb    { $$ = $1; }
+  ;
+
+stmt_nb
+  : var_decl stmt_end { $$ = mk1("VarStmt", $1); }
+  | expr ASSIGN expr stmt_end { $$ = mk3("AssignStmt", $1, mk("Op", ":="), $3); }
   | expr stmt_end { $$ = mk1("ExprStmt", $1); }
-  | IF LP expr RP stmt %prec IF_NO_ELSE              { $$ = mk2("IfStmt", $3, $5); }
-  | IF LP expr RP stmt ELSE stmt     { $$ = mk3("IfElseStmt", $3, $5, $7); }
-  | FOR LP for_init_opt COMMA for_cond_opt COMMA lvalue ASSIGN expr RP stmt
+  | IF LP expr RP opt_newlines stmt_body %prec IF_NO_ELSE
+      { $$ = mk2("IfStmt", $3, $6); }
+  | IF LP expr RP opt_newlines stmt_body ELSE opt_newlines stmt_body
+      { $$ = mk3("IfElseStmt", $3, $6, $9); }
+  | FOR LP for_init_opt COMMA for_cond_opt COMMA expr ASSIGN expr RP opt_newlines stmt_body
       {
         Node* n = mk("ForStmt");
         n->children.push_back($3);   /* init */
         n->children.push_back($5);   /* cond */
         n->children.push_back(mk3("Update", $7, mk("Op", ":="), $9));
-        n->children.push_back($11);  /* body */
+        n->children.push_back($12);  /* body */
         $$ = n;
       }
   | PRINT LP expr RP stmt_end { $$ = mk1("PrintStmt", $3); }
-  | READ  LP lvalue RP stmt_end { $$ = mk1("ReadStmt", $3); }
+  | READ  LP expr RP stmt_end { $$ = mk1("ReadStmt", $3); }
   | RETURN expr stmt_end { $$ = mk1("ReturnStmt", $2); }
   | BREAK stmt_end { $$ = mk("BreakStmt"); }
   | CONTINUE stmt_end { $$ = mk("ContinueStmt"); }
@@ -258,7 +302,7 @@ for_init_opt
 
 for_init
   : var_decl                { $$ = mk1("ForInitVar", $1); }
-  | lvalue ASSIGN expr      { $$ = mk3("ForInitAssign", $1, mk("Op", ":="), $3); }
+  | expr ASSIGN expr      { $$ = mk3("ForInitAssign", $1, mk("Op", ":="), $3); }
   ;
 
 for_cond_opt
@@ -307,23 +351,6 @@ array_opt
   | LBRACK RBRACK        { $$ = mk("Array", "true"); }
   ;
 
-/* lvalue ::= ID ( ("[" expr "]") | ("." ID) )* */
-lvalue
-  : ID lvalue_tail_list
-    { $$ = mk("LValue"); $$->children.push_back(mk("Id", $1)); $$->children.push_back($2); }
-  ;
-
-lvalue_tail_list
-  : /* empty */ { $$ = mk("LValueTails"); }
-  | lvalue_tail_list lvalue_tail { $$ = $1; $$->children.push_back($2); }
-  ;
-
-lvalue_tail
-  : LBRACK expr RBRACK { $$ = mk1("IndexTail", $2); }
-  | DOT ID             { $$ = mk("FieldTail", $2); }
-  | DOT LENGTH { $$  = mk("LengthTail"); }
-  ;
-
 /* Expression with precedence layers */
 expr : expr_or { $$ = $1; } ;
 
@@ -367,11 +394,31 @@ expr_pow
 expr_unary
   : NOT expr_unary            { $$ = mk1("NotExpr", $2); }
   | MINUSOP expr_unary %prec UMINUS { $$ = mk1("NegExpr", $2); }
-  | expr_postfix              { $$ = $1; }
-  ;
+  | expr_postfix { $$ = $1; };
+
 
 expr_postfix
-  : expr_postfix LP args_opt RP
+  : expr_postfix LBRACK expr RBRACK
+    {
+      Node* n = mk("IndexExpr");
+      n->children.push_back($1);
+      n->children.push_back($3);
+      $$ = n;
+    }
+  | expr_postfix DOT LENGTH
+    {
+      Node* n = mk("LengthExpr");
+      n->children.push_back($1);
+      $$ = n;
+    }
+  | expr_postfix DOT ID
+    {
+      Node* n = mk("FieldExpr");
+      n->children.push_back($1);
+      n->children.push_back(mk("Id", $3));
+      $$ = n;
+    }
+  | expr_postfix LP args_opt RP
     {
       Node* n = mk("CallExpr");
       n->children.push_back($1);
@@ -387,7 +434,7 @@ primary
   | FLOAT  { $$ = mk("Float", $1); }
   | TRUE   { $$ = mk("Bool", "true"); }
   | FALSE  { $$ = mk("Bool", "false"); }
-  | lvalue { $$ = mk1("LValueExpr", $1); }
+  | ID    { $$ = mk("Id", $1); }
   | base_type LBRACK args RBRACK
     {
       Node* n = mk("ArrayLiteral");

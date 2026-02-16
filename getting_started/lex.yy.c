@@ -1071,37 +1071,38 @@ YY_RULE_SETUP
         if(!lexical_errors) fprintf(stderr, "Lexical errors found! See logs below:\n");
         fprintf(stderr, "Lexical error at line %d: leading zero in integer %s\n", yylineno, yytext);
         lexical_errors = 1;
+	exit(1);
     }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 74 "lexer.flex"
+#line 75 "lexer.flex"
 { if(USE_LEX_ONLY) { printf("INT "); } else { return yy::parser::make_INT(yytext); } }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 76 "lexer.flex"
+#line 77 "lexer.flex"
 { if(USE_LEX_ONLY) { printf("ID "); } else { return yy::parser::make_ID(yytext); } }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 78 "lexer.flex"
+#line 79 "lexer.flex"
 {}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 80 "lexer.flex"
+#line 81 "lexer.flex"
 {}
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 82 "lexer.flex"
+#line 83 "lexer.flex"
 { if(USE_LEX_ONLY) { printf("NEWLINE "); } else { return yy::parser::make_NEWLINE(yytext); } }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 84 "lexer.flex"
+#line 85 "lexer.flex"
 {
     if(!lexical_errors) fprintf(stderr, "Lexical errors found! See the logs below: \n");
     fprintf(stderr,"\t@error at line %d. Character %s is not recognized\n", yylineno, yytext);
@@ -1109,7 +1110,7 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 90 "lexer.flex"
+#line 91 "lexer.flex"
 {
     if(USE_LEX_ONLY) { printf("\n"); fflush(stdout); }
     return yy::parser::make_END();
@@ -1117,10 +1118,10 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 95 "lexer.flex"
+#line 96 "lexer.flex"
 ECHO;
 	YY_BREAK
-#line 1124 "lex.yy.c"
+#line 1125 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2141,6 +2142,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 95 "lexer.flex"
+#line 96 "lexer.flex"
 
 

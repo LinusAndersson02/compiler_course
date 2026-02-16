@@ -1,401 +1,279 @@
 digraph {
-n0 [label="Progam:"];
+n0 [label="Program:"];
 n1 [label="Globals:"];
-n2 [label="GlobalVar:"];
-n3 [label="VarDecl:"];
-n4 [label="Volatile:false"];
-n3 -> n4
-n5 [label="Id:g"];
-n3 -> n5
-n6 [label="Type:"];
-n7 [label="BaseType:int"];
-n6 -> n7
-n8 [label="Array:false"];
-n6 -> n8
-n3 -> n6
-n2 -> n3
-n1 -> n2
-n9 [label="GlobalVar:"];
-n10 [label="VarDecl:"];
-n11 [label="Volatile:true"];
-n10 -> n11
-n12 [label="Id:gf"];
-n10 -> n12
-n13 [label="Type:"];
-n14 [label="BaseType:float"];
-n13 -> n14
-n15 [label="Array:false"];
-n13 -> n15
-n10 -> n13
-n16 [label="Init:"];
-n17 [label="Float:2.0"];
-n16 -> n17
-n10 -> n16
-n9 -> n10
-n1 -> n9
 n0 -> n1
-n18 [label="Classes:"];
-n19 [label="ClassDecl:"];
-n20 [label="Id:Point"];
-n19 -> n20
-n21 [label="ClassBody:"];
-n22 [label="ClassVar:"];
-n23 [label="VarDecl:"];
-n24 [label="Volatile:false"];
+n2 [label="Classes:"];
+n3 [label="ClassDecl:"];
+n4 [label="Id:DuplicateIdentifiers"];
+n3 -> n4
+n5 [label="ClassBody:"];
+n6 [label="ClassVar:"];
+n7 [label="VarDecl:"];
+n8 [label="Volatile:false"];
+n7 -> n8
+n9 [label="Id:a"];
+n7 -> n9
+n10 [label="Type:"];
+n11 [label="BaseType:int"];
+n10 -> n11
+n12 [label="Array:false"];
+n10 -> n12
+n7 -> n10
+n6 -> n7
+n5 -> n6
+n13 [label="ClassVar:"];
+n14 [label="VarDecl:"];
+n15 [label="Volatile:false"];
+n14 -> n15
+n16 [label="Id:a"];
+n14 -> n16
+n17 [label="Type:"];
+n18 [label="BaseType:int"];
+n17 -> n18
+n19 [label="Array:false"];
+n17 -> n19
+n14 -> n17
+n13 -> n14
+n5 -> n13
+n20 [label="MethodDecl:"];
+n21 [label="Id:func"];
+n20 -> n21
+n22 [label="Params:"];
+n20 -> n22
+n23 [label="ReturnType:"];
+n24 [label="Type:"];
+n25 [label="BaseType:boolean"];
+n24 -> n25
+n26 [label="Array:false"];
+n24 -> n26
 n23 -> n24
-n25 [label="Id:x"];
-n23 -> n25
-n26 [label="Type:"];
-n27 [label="BaseType:int"];
-n26 -> n27
-n28 [label="Array:false"];
-n26 -> n28
-n23 -> n26
-n22 -> n23
-n21 -> n22
-n29 [label="ClassVar:"];
-n30 [label="VarDecl:"];
-n31 [label="Volatile:true"];
-n30 -> n31
-n32 [label="Id:y"];
-n30 -> n32
-n33 [label="Type:"];
-n34 [label="BaseType:float"];
-n33 -> n34
-n35 [label="Array:false"];
-n33 -> n35
-n30 -> n33
-n36 [label="Init:"];
-n37 [label="Float:1.5"];
-n36 -> n37
-n30 -> n36
+n20 -> n23
+n27 [label="StmtBlock:"];
+n28 [label="Stmts:"];
+n29 [label="ReturnStmt:"];
+n30 [label="Bool:true"];
 n29 -> n30
-n21 -> n29
-n38 [label="MethodDecl:"];
-n39 [label="Id:sum"];
-n38 -> n39
-n40 [label="Params:"];
-n41 [label="Param:"];
-n42 [label="Id:a"];
-n41 -> n42
-n43 [label="Type:"];
-n44 [label="BaseType:int"];
-n43 -> n44
-n45 [label="Array:false"];
-n43 -> n45
-n41 -> n43
+n28 -> n29
+n27 -> n28
+n20 -> n27
+n5 -> n20
+n31 [label="MethodDecl:"];
+n32 [label="Id:func"];
+n31 -> n32
+n33 [label="Params:"];
+n31 -> n33
+n34 [label="ReturnType:"];
+n35 [label="Type:"];
+n36 [label="BaseType:int"];
+n35 -> n36
+n37 [label="Array:false"];
+n35 -> n37
+n34 -> n35
+n31 -> n34
+n38 [label="StmtBlock:"];
+n39 [label="Stmts:"];
+n40 [label="ReturnStmt:"];
+n41 [label="Int:1"];
 n40 -> n41
-n46 [label="Param:"];
-n47 [label="Id:b"];
-n46 -> n47
-n48 [label="Type:"];
-n49 [label="BaseType:int"];
-n48 -> n49
-n50 [label="Array:false"];
-n48 -> n50
-n46 -> n48
-n40 -> n46
-n38 -> n40
-n51 [label="ReturnType:"];
+n39 -> n40
+n38 -> n39
+n31 -> n38
+n5 -> n31
+n3 -> n5
+n2 -> n3
+n42 [label="ClassDecl:"];
+n43 [label="Id:DuplicateIdentifiers"];
+n42 -> n43
+n44 [label="ClassBody:"];
+n42 -> n44
+n2 -> n42
+n45 [label="ClassDecl:"];
+n46 [label="Id:MyClass"];
+n45 -> n46
+n47 [label="ClassBody:"];
+n48 [label="ClassVar:"];
+n49 [label="VarDecl:"];
+n50 [label="Volatile:false"];
+n49 -> n50
+n51 [label="Id:b"];
+n49 -> n51
 n52 [label="Type:"];
-n53 [label="BaseType:int"];
+n53 [label="BaseType:boolean"];
 n52 -> n53
 n54 [label="Array:false"];
 n52 -> n54
-n51 -> n52
-n38 -> n51
-n55 [label="StmtBlock:"];
-n56 [label="Stmts:"];
-n57 [label="PrintStmt:"];
-n58 [label="AddExpr:"];
-n59 [label="LValueExpr:"];
-n60 [label="LValue:"];
-n61 [label="Id:a"];
-n60 -> n61
-n62 [label="LValueTails:"];
-n60 -> n62
-n59 -> n60
-n58 -> n59
-n63 [label="LValueExpr:"];
-n64 [label="LValue:"];
-n65 [label="Id:b"];
-n64 -> n65
-n66 [label="LValueTails:"];
-n64 -> n66
-n63 -> n64
-n58 -> n63
-n57 -> n58
+n49 -> n52
+n48 -> n49
+n47 -> n48
+n55 [label="ClassVar:"];
+n56 [label="VarDecl:"];
+n57 [label="Volatile:false"];
 n56 -> n57
-n67 [label="ReturnStmt:"];
-n68 [label="AddExpr:"];
-n69 [label="LValueExpr:"];
-n70 [label="LValue:"];
-n71 [label="Id:a"];
-n70 -> n71
-n72 [label="LValueTails:"];
-n70 -> n72
-n69 -> n70
-n68 -> n69
-n73 [label="LValueExpr:"];
-n74 [label="LValue:"];
-n75 [label="Id:b"];
-n74 -> n75
-n76 [label="LValueTails:"];
-n74 -> n76
-n73 -> n74
-n68 -> n73
-n67 -> n68
-n56 -> n67
+n58 [label="Id:b"];
+n56 -> n58
+n59 [label="Type:"];
+n60 [label="BaseType:boolean"];
+n59 -> n60
+n61 [label="Array:false"];
+n59 -> n61
+n56 -> n59
 n55 -> n56
-n38 -> n55
-n21 -> n38
-n19 -> n21
-n18 -> n19
-n0 -> n18
-n77 [label="Entry:"];
-n78 [label="ReturnType:int"];
-n77 -> n78
+n47 -> n55
+n62 [label="MethodDecl:"];
+n63 [label="Id:Pen"];
+n62 -> n63
+n64 [label="Params:"];
+n65 [label="Param:"];
+n66 [label="Id:param"];
+n65 -> n66
+n67 [label="Type:"];
+n68 [label="BaseType:int"];
+n67 -> n68
+n69 [label="Array:false"];
+n67 -> n69
+n65 -> n67
+n64 -> n65
+n70 [label="Param:"];
+n71 [label="Id:param"];
+n70 -> n71
+n72 [label="Type:"];
+n73 [label="BaseType:int"];
+n72 -> n73
+n74 [label="Array:false"];
+n72 -> n74
+n70 -> n72
+n64 -> n70
+n62 -> n64
+n75 [label="ReturnType:"];
+n76 [label="Type:"];
+n77 [label="BaseType:int"];
+n76 -> n77
+n78 [label="Array:false"];
+n76 -> n78
+n75 -> n76
+n62 -> n75
 n79 [label="StmtBlock:"];
 n80 [label="Stmts:"];
-n81 [label="VarStmt:"];
-n82 [label="VarDecl:"];
-n83 [label="Volatile:false"];
-n82 -> n83
-n84 [label="Id:x"];
-n82 -> n84
-n85 [label="Type:"];
-n86 [label="BaseType:int"];
-n85 -> n86
-n87 [label="Array:false"];
-n85 -> n87
-n82 -> n85
-n88 [label="Init:"];
-n89 [label="Int:0"];
-n88 -> n89
-n82 -> n88
+n81 [label="ReturnStmt:"];
+n82 [label="Int:1"];
 n81 -> n82
 n80 -> n81
-n90 [label="VarStmt:"];
-n91 [label="VarDecl:"];
-n92 [label="Volatile:false"];
+n79 -> n80
+n62 -> n79
+n47 -> n62
+n83 [label="MethodDecl:"];
+n84 [label="Id:Pen2"];
+n83 -> n84
+n85 [label="Params:"];
+n86 [label="Param:"];
+n87 [label="Id:param"];
+n86 -> n87
+n88 [label="Type:"];
+n89 [label="BaseType:int"];
+n88 -> n89
+n90 [label="Array:false"];
+n88 -> n90
+n86 -> n88
+n85 -> n86
+n83 -> n85
+n91 [label="ReturnType:"];
+n92 [label="Type:"];
+n93 [label="BaseType:int"];
+n92 -> n93
+n94 [label="Array:false"];
+n92 -> n94
 n91 -> n92
-n93 [label="Id:a"];
-n91 -> n93
-n94 [label="Type:"];
-n95 [label="BaseType:int"];
-n94 -> n95
-n96 [label="Array:true"];
-n94 -> n96
-n91 -> n94
-n97 [label="Init:"];
-n98 [label="ArrayLiteral:"];
-n99 [label="BaseType:int"];
+n83 -> n91
+n95 [label="StmtBlock:"];
+n96 [label="Stmts:"];
+n97 [label="VarStmt:"];
+n98 [label="VarDecl:"];
+n99 [label="Volatile:false"];
 n98 -> n99
-n100 [label="Args:"];
-n101 [label="Int:1"];
-n100 -> n101
-n102 [label="Int:2"];
-n100 -> n102
-n103 [label="Int:3"];
-n100 -> n103
+n100 [label="Id:param"];
 n98 -> n100
+n101 [label="Type:"];
+n102 [label="BaseType:int"];
+n101 -> n102
+n103 [label="Array:false"];
+n101 -> n103
+n98 -> n101
 n97 -> n98
-n91 -> n97
-n90 -> n91
-n80 -> n90
-n104 [label="PrintStmt:"];
-n105 [label="LValueExpr:"];
-n106 [label="LValue:"];
-n107 [label="Id:a"];
-n106 -> n107
-n108 [label="LValueTails:"];
-n109 [label="LengthTail:"];
-n108 -> n109
-n106 -> n108
-n105 -> n106
+n96 -> n97
+n104 [label="ReturnStmt:"];
+n105 [label="Int:1"];
 n104 -> n105
-n80 -> n104
+n96 -> n104
+n95 -> n96
+n83 -> n95
+n47 -> n83
+n45 -> n47
+n2 -> n45
+n0 -> n2
+n106 [label="Entry:"];
+n107 [label="ReturnType:int"];
+n106 -> n107
+n108 [label="StmtBlock:"];
+n109 [label="Stmts:"];
 n110 [label="PrintStmt:"];
-n111 [label="LValueExpr:"];
-n112 [label="LValue:"];
-n113 [label="Id:a"];
+n111 [label="CallExpr:"];
+n112 [label="FieldExpr:"];
+n113 [label="CallExpr:"];
+n114 [label="Id:DuplicateIdentifiers"];
+n113 -> n114
+n115 [label="Args:"];
+n113 -> n115
 n112 -> n113
-n114 [label="LValueTails:"];
-n115 [label="IndexTail:"];
-n116 [label="Int:1"];
-n115 -> n116
-n114 -> n115
-n112 -> n114
+n116 [label="Id:func"];
+n112 -> n116
 n111 -> n112
+n117 [label="Args:"];
+n111 -> n117
 n110 -> n111
-n80 -> n110
-n117 [label="AssignStmt:"];
-n118 [label="LValue:"];
-n119 [label="Id:x"];
+n109 -> n110
+n118 [label="PrintStmt:"];
+n119 [label="CallExpr:"];
+n120 [label="FieldExpr:"];
+n121 [label="CallExpr:"];
+n122 [label="Id:MyClass"];
+n121 -> n122
+n123 [label="Args:"];
+n121 -> n123
+n120 -> n121
+n124 [label="Id:Pen"];
+n120 -> n124
+n119 -> n120
+n125 [label="Args:"];
+n126 [label="Int:1"];
+n125 -> n126
+n127 [label="Int:2"];
+n125 -> n127
+n119 -> n125
 n118 -> n119
-n120 [label="LValueTails:"];
-n118 -> n120
-n117 -> n118
-n121 [label="Op::="];
-n117 -> n121
-n122 [label="AddExpr:"];
-n123 [label="LValueExpr:"];
-n124 [label="LValue:"];
-n125 [label="Id:x"];
-n124 -> n125
-n126 [label="LValueTails:"];
-n124 -> n126
-n123 -> n124
-n122 -> n123
-n127 [label="Int:1"];
-n122 -> n127
-n117 -> n122
-n80 -> n117
-n128 [label="ExprStmt:"];
-n129 [label="AddExpr:"];
-n130 [label="LValueExpr:"];
-n131 [label="LValue:"];
-n132 [label="Id:x"];
+n109 -> n118
+n128 [label="PrintStmt:"];
+n129 [label="CallExpr:"];
+n130 [label="FieldExpr:"];
+n131 [label="CallExpr:"];
+n132 [label="Id:MyClass"];
 n131 -> n132
-n133 [label="LValueTails:"];
+n133 [label="Args:"];
 n131 -> n133
 n130 -> n131
+n134 [label="Id:Pen2"];
+n130 -> n134
 n129 -> n130
-n134 [label="Int:5"];
-n129 -> n134
-n128 -> n129
-n80 -> n128
-n135 [label="IfElseStmt:"];
-n136 [label="EqExpr:"];
-n137 [label="LValueExpr:"];
-n138 [label="LValue:"];
-n139 [label="Id:x"];
-n138 -> n139
-n140 [label="LValueTails:"];
-n138 -> n140
-n137 -> n138
-n136 -> n137
-n141 [label="Int:1"];
-n136 -> n141
+n135 [label="Args:"];
+n136 [label="Int:3"];
 n135 -> n136
-n142 [label="StmtBlock:"];
-n143 [label="Stmts:"];
-n144 [label="PrintStmt:"];
-n145 [label="Int:111"];
-n144 -> n145
-n143 -> n144
-n142 -> n143
-n135 -> n142
-n146 [label="StmtBlock:"];
-n147 [label="Stmts:"];
-n148 [label="PrintStmt:"];
-n149 [label="Int:222"];
-n148 -> n149
-n147 -> n148
-n146 -> n147
-n135 -> n146
-n80 -> n135
-n150 [label="ForStmt:"];
-n151 [label="ForInitVar:"];
-n152 [label="VarDecl:"];
-n153 [label="Volatile:false"];
-n152 -> n153
-n154 [label="Id:i"];
-n152 -> n154
-n155 [label="Type:"];
-n156 [label="BaseType:int"];
-n155 -> n156
-n157 [label="Array:false"];
-n155 -> n157
-n152 -> n155
-n158 [label="Init:"];
-n159 [label="Int:0"];
-n158 -> n159
-n152 -> n158
-n151 -> n152
-n150 -> n151
-n160 [label="LtExpr:"];
-n161 [label="LValueExpr:"];
-n162 [label="LValue:"];
-n163 [label="Id:i"];
-n162 -> n163
-n164 [label="LValueTails:"];
-n162 -> n164
-n161 -> n162
-n160 -> n161
-n165 [label="Int:3"];
-n160 -> n165
-n150 -> n160
-n166 [label="Update:"];
-n167 [label="LValue:"];
-n168 [label="Id:i"];
-n167 -> n168
-n169 [label="LValueTails:"];
-n167 -> n169
-n166 -> n167
-n170 [label="Op::="];
-n166 -> n170
-n171 [label="AddExpr:"];
-n172 [label="LValueExpr:"];
-n173 [label="LValue:"];
-n174 [label="Id:i"];
-n173 -> n174
-n175 [label="LValueTails:"];
-n173 -> n175
-n172 -> n173
-n171 -> n172
-n176 [label="Int:1"];
-n171 -> n176
-n166 -> n171
-n150 -> n166
-n177 [label="StmtBlock:"];
-n178 [label="Stmts:"];
-n179 [label="PrintStmt:"];
-n180 [label="LValueExpr:"];
-n181 [label="LValue:"];
-n182 [label="Id:i"];
-n181 -> n182
-n183 [label="LValueTails:"];
-n181 -> n183
-n180 -> n181
-n179 -> n180
-n178 -> n179
-n184 [label="ContinueStmt:"];
-n178 -> n184
-n177 -> n178
-n150 -> n177
-n80 -> n150
-n185 [label="ReadStmt:"];
-n186 [label="LValue:"];
-n187 [label="Id:a"];
-n186 -> n187
-n188 [label="LValueTails:"];
-n189 [label="IndexTail:"];
-n190 [label="Int:0"];
-n189 -> n190
-n188 -> n189
-n186 -> n188
-n185 -> n186
-n80 -> n185
-n191 [label="PrintStmt:"];
-n192 [label="LValueExpr:"];
-n193 [label="LValue:"];
-n194 [label="Id:a"];
-n193 -> n194
-n195 [label="LValueTails:"];
-n196 [label="IndexTail:"];
-n197 [label="Int:0"];
-n196 -> n197
-n195 -> n196
-n193 -> n195
-n192 -> n193
-n191 -> n192
-n80 -> n191
-n198 [label="ReturnStmt:"];
-n199 [label="Int:0"];
-n198 -> n199
-n80 -> n198
-n79 -> n80
-n77 -> n79
-n0 -> n77
+n129 -> n135
+n128 -> n129
+n109 -> n128
+n137 [label="ReturnStmt:"];
+n138 [label="Int:0"];
+n137 -> n138
+n109 -> n137
+n108 -> n109
+n106 -> n108
+n0 -> n106
 }
