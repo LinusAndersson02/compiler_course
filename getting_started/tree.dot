@@ -4,276 +4,180 @@ n1 [label="Globals:"];
 n0 -> n1
 n2 [label="Classes:"];
 n3 [label="ClassDecl:"];
-n4 [label="Id:DuplicateIdentifiers"];
+n4 [label="Id:Fibonacci"];
 n3 -> n4
 n5 [label="ClassBody:"];
-n6 [label="ClassVar:"];
-n7 [label="VarDecl:"];
-n8 [label="Volatile:false"];
-n7 -> n8
-n9 [label="Id:a"];
-n7 -> n9
-n10 [label="Type:"];
-n11 [label="BaseType:int"];
-n10 -> n11
-n12 [label="Array:false"];
-n10 -> n12
-n7 -> n10
+n6 [label="MethodDecl:"];
+n7 [label="Id:fib"];
 n6 -> n7
-n5 -> n6
-n13 [label="ClassVar:"];
-n14 [label="VarDecl:"];
-n15 [label="Volatile:false"];
+n8 [label="Params:"];
+n9 [label="Param:"];
+n10 [label="Id:n"];
+n9 -> n10
+n11 [label="Type:"];
+n12 [label="BaseType:int"];
+n11 -> n12
+n13 [label="Array:false"];
+n11 -> n13
+n9 -> n11
+n8 -> n9
+n6 -> n8
+n14 [label="ReturnType:"];
+n15 [label="Type:"];
+n16 [label="BaseType:int"];
+n15 -> n16
+n17 [label="Array:false"];
+n15 -> n17
 n14 -> n15
-n16 [label="Id:a"];
-n14 -> n16
-n17 [label="Type:"];
-n18 [label="BaseType:int"];
-n17 -> n18
-n19 [label="Array:false"];
-n17 -> n19
-n14 -> n17
-n13 -> n14
-n5 -> n13
-n20 [label="MethodDecl:"];
-n21 [label="Id:func"];
+n6 -> n14
+n18 [label="StmtBlock:"];
+n19 [label="Stmts:"];
+n20 [label="IfElseStmt:"];
+n21 [label="LtExpr:"];
+n22 [label="Id:n"];
+n21 -> n22
+n23 [label="Int:3"];
+n21 -> n23
 n20 -> n21
-n22 [label="Params:"];
-n20 -> n22
-n23 [label="ReturnType:"];
-n24 [label="Type:"];
-n25 [label="BaseType:boolean"];
+n24 [label="StmtBlock:"];
+n25 [label="Stmts:"];
+n26 [label="ReturnStmt:"];
+n27 [label="Int:1"];
+n26 -> n27
+n25 -> n26
 n24 -> n25
-n26 [label="Array:false"];
-n24 -> n26
-n23 -> n24
-n20 -> n23
-n27 [label="StmtBlock:"];
-n28 [label="Stmts:"];
-n29 [label="ReturnStmt:"];
-n30 [label="Bool:true"];
-n29 -> n30
-n28 -> n29
-n27 -> n28
-n20 -> n27
-n5 -> n20
-n31 [label="MethodDecl:"];
-n32 [label="Id:func"];
-n31 -> n32
-n33 [label="Params:"];
-n31 -> n33
-n34 [label="ReturnType:"];
-n35 [label="Type:"];
-n36 [label="BaseType:int"];
+n20 -> n24
+n28 [label="StmtBlock:"];
+n29 [label="Stmts:"];
+n30 [label="ReturnStmt:"];
+n31 [label="AddExpr:"];
+n32 [label="CallExpr:"];
+n33 [label="Id:fib"];
+n32 -> n33
+n34 [label="Args:"];
+n35 [label="SubExpr:"];
+n36 [label="Id:n"];
 n35 -> n36
-n37 [label="Array:false"];
+n37 [label="Int:1"];
 n35 -> n37
 n34 -> n35
-n31 -> n34
-n38 [label="StmtBlock:"];
-n39 [label="Stmts:"];
-n40 [label="ReturnStmt:"];
-n41 [label="Int:1"];
-n40 -> n41
-n39 -> n40
+n32 -> n34
+n31 -> n32
+n38 [label="CallExpr:"];
+n39 [label="Id:fib"];
 n38 -> n39
+n40 [label="Args:"];
+n41 [label="SubExpr:"];
+n42 [label="Id:n"];
+n41 -> n42
+n43 [label="Int:2"];
+n41 -> n43
+n40 -> n41
+n38 -> n40
 n31 -> n38
-n5 -> n31
+n30 -> n31
+n29 -> n30
+n28 -> n29
+n20 -> n28
+n19 -> n20
+n18 -> n19
+n6 -> n18
+n5 -> n6
 n3 -> n5
 n2 -> n3
-n42 [label="ClassDecl:"];
-n43 [label="Id:DuplicateIdentifiers"];
-n42 -> n43
-n44 [label="ClassBody:"];
-n42 -> n44
-n2 -> n42
-n45 [label="ClassDecl:"];
-n46 [label="Id:MyClass"];
-n45 -> n46
-n47 [label="ClassBody:"];
-n48 [label="ClassVar:"];
+n0 -> n2
+n44 [label="Entry:"];
+n45 [label="ReturnType:int"];
+n44 -> n45
+n46 [label="StmtBlock:"];
+n47 [label="Stmts:"];
+n48 [label="VarStmt:"];
 n49 [label="VarDecl:"];
 n50 [label="Volatile:false"];
 n49 -> n50
-n51 [label="Id:b"];
+n51 [label="Id:fibonacci"];
 n49 -> n51
-n52 [label="Type:"];
-n53 [label="BaseType:boolean"];
-n52 -> n53
-n54 [label="Array:false"];
-n52 -> n54
+n52 [label="TypeName:Fibonacci"];
 n49 -> n52
+n53 [label="Init:"];
+n54 [label="CallExpr:"];
+n55 [label="Id:Fibonacci"];
+n54 -> n55
+n56 [label="Args:"];
+n54 -> n56
+n53 -> n54
+n49 -> n53
 n48 -> n49
 n47 -> n48
-n55 [label="ClassVar:"];
-n56 [label="VarDecl:"];
-n57 [label="Volatile:false"];
-n56 -> n57
-n58 [label="Id:b"];
-n56 -> n58
-n59 [label="Type:"];
-n60 [label="BaseType:boolean"];
-n59 -> n60
-n61 [label="Array:false"];
-n59 -> n61
-n56 -> n59
-n55 -> n56
-n47 -> n55
-n62 [label="MethodDecl:"];
-n63 [label="Id:Pen"];
-n62 -> n63
-n64 [label="Params:"];
-n65 [label="Param:"];
-n66 [label="Id:param"];
-n65 -> n66
-n67 [label="Type:"];
-n68 [label="BaseType:int"];
-n67 -> n68
-n69 [label="Array:false"];
-n67 -> n69
-n65 -> n67
+n57 [label="VarStmt:"];
+n58 [label="VarDecl:"];
+n59 [label="Volatile:true"];
+n58 -> n59
+n60 [label="Id:n"];
+n58 -> n60
+n61 [label="Type:"];
+n62 [label="BaseType:int"];
+n61 -> n62
+n63 [label="Array:false"];
+n61 -> n63
+n58 -> n61
+n64 [label="Init:"];
+n65 [label="Int:1"];
 n64 -> n65
-n70 [label="Param:"];
-n71 [label="Id:param"];
-n70 -> n71
-n72 [label="Type:"];
-n73 [label="BaseType:int"];
-n72 -> n73
-n74 [label="Array:false"];
-n72 -> n74
-n70 -> n72
-n64 -> n70
-n62 -> n64
-n75 [label="ReturnType:"];
-n76 [label="Type:"];
-n77 [label="BaseType:int"];
-n76 -> n77
-n78 [label="Array:false"];
-n76 -> n78
-n75 -> n76
-n62 -> n75
-n79 [label="StmtBlock:"];
-n80 [label="Stmts:"];
-n81 [label="ReturnStmt:"];
-n82 [label="Int:1"];
+n58 -> n64
+n57 -> n58
+n47 -> n57
+n66 [label="ForStmt:"];
+n67 [label="ForInitAssign:"];
+n68 [label="Id:n"];
+n67 -> n68
+n69 [label="Op::="];
+n67 -> n69
+n70 [label="Int:1"];
+n67 -> n70
+n66 -> n67
+n71 [label="LeExpr:"];
+n72 [label="Id:n"];
+n71 -> n72
+n73 [label="Int:16"];
+n71 -> n73
+n66 -> n71
+n74 [label="Update:"];
+n75 [label="Id:n"];
+n74 -> n75
+n76 [label="Op::="];
+n74 -> n76
+n77 [label="AddExpr:"];
+n78 [label="Id:n"];
+n77 -> n78
+n79 [label="Int:1"];
+n77 -> n79
+n74 -> n77
+n66 -> n74
+n80 [label="StmtBlock:"];
+n81 [label="Stmts:"];
+n82 [label="PrintStmt:"];
+n83 [label="CallExpr:"];
+n84 [label="FieldExpr:"];
+n85 [label="Id:fibonacci"];
+n84 -> n85
+n86 [label="Id:fib"];
+n84 -> n86
+n83 -> n84
+n87 [label="Args:"];
+n88 [label="Id:n"];
+n87 -> n88
+n83 -> n87
+n82 -> n83
 n81 -> n82
 n80 -> n81
-n79 -> n80
-n62 -> n79
-n47 -> n62
-n83 [label="MethodDecl:"];
-n84 [label="Id:Pen2"];
-n83 -> n84
-n85 [label="Params:"];
-n86 [label="Param:"];
-n87 [label="Id:param"];
-n86 -> n87
-n88 [label="Type:"];
-n89 [label="BaseType:int"];
-n88 -> n89
-n90 [label="Array:false"];
-n88 -> n90
-n86 -> n88
-n85 -> n86
-n83 -> n85
-n91 [label="ReturnType:"];
-n92 [label="Type:"];
-n93 [label="BaseType:int"];
-n92 -> n93
-n94 [label="Array:false"];
-n92 -> n94
-n91 -> n92
-n83 -> n91
-n95 [label="StmtBlock:"];
-n96 [label="Stmts:"];
-n97 [label="VarStmt:"];
-n98 [label="VarDecl:"];
-n99 [label="Volatile:false"];
-n98 -> n99
-n100 [label="Id:param"];
-n98 -> n100
-n101 [label="Type:"];
-n102 [label="BaseType:int"];
-n101 -> n102
-n103 [label="Array:false"];
-n101 -> n103
-n98 -> n101
-n97 -> n98
-n96 -> n97
-n104 [label="ReturnStmt:"];
-n105 [label="Int:1"];
-n104 -> n105
-n96 -> n104
-n95 -> n96
-n83 -> n95
-n47 -> n83
-n45 -> n47
-n2 -> n45
-n0 -> n2
-n106 [label="Entry:"];
-n107 [label="ReturnType:int"];
-n106 -> n107
-n108 [label="StmtBlock:"];
-n109 [label="Stmts:"];
-n110 [label="PrintStmt:"];
-n111 [label="CallExpr:"];
-n112 [label="FieldExpr:"];
-n113 [label="CallExpr:"];
-n114 [label="Id:DuplicateIdentifiers"];
-n113 -> n114
-n115 [label="Args:"];
-n113 -> n115
-n112 -> n113
-n116 [label="Id:func"];
-n112 -> n116
-n111 -> n112
-n117 [label="Args:"];
-n111 -> n117
-n110 -> n111
-n109 -> n110
-n118 [label="PrintStmt:"];
-n119 [label="CallExpr:"];
-n120 [label="FieldExpr:"];
-n121 [label="CallExpr:"];
-n122 [label="Id:MyClass"];
-n121 -> n122
-n123 [label="Args:"];
-n121 -> n123
-n120 -> n121
-n124 [label="Id:Pen"];
-n120 -> n124
-n119 -> n120
-n125 [label="Args:"];
-n126 [label="Int:1"];
-n125 -> n126
-n127 [label="Int:2"];
-n125 -> n127
-n119 -> n125
-n118 -> n119
-n109 -> n118
-n128 [label="PrintStmt:"];
-n129 [label="CallExpr:"];
-n130 [label="FieldExpr:"];
-n131 [label="CallExpr:"];
-n132 [label="Id:MyClass"];
-n131 -> n132
-n133 [label="Args:"];
-n131 -> n133
-n130 -> n131
-n134 [label="Id:Pen2"];
-n130 -> n134
-n129 -> n130
-n135 [label="Args:"];
-n136 [label="Int:3"];
-n135 -> n136
-n129 -> n135
-n128 -> n129
-n109 -> n128
-n137 [label="ReturnStmt:"];
-n138 [label="Int:0"];
-n137 -> n138
-n109 -> n137
-n108 -> n109
-n106 -> n108
-n0 -> n106
+n66 -> n80
+n47 -> n66
+n89 [label="ReturnStmt:"];
+n90 [label="Int:0"];
+n89 -> n90
+n47 -> n89
+n46 -> n47
+n44 -> n46
+n0 -> n44
 }

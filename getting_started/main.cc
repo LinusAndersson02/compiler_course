@@ -1,3 +1,5 @@
+#include "ErrorReporter.h"
+#include "Passes.h"
 #include "parser.tab.hh"
 #include <iostream>
 #include <string>
@@ -58,11 +60,36 @@ int main(int argc, char **argv) {
              "input! \n");
 
       printf("\nPrint Tree:  \n");
+
+      bool astOk = false;
       try {
         root->print_tree();
         root->generate_tree();
+        astOk = true;
       } catch (...) {
         errCode = errCodes::AST_ERROR;
+      }
+
+      if (astOk) {
+        ErrorReporter semErrors;
+
+        SymbolTable st = buildSymbolTable(root, semErrors);
+
+	std::cout << "\n--- SYMBOL TABLE (Pass 1) ---\n";
+	st.print(std::cout);
+	std::cout << "----------------------------\n";
+
+        semanticAnalyze(root, st, semErrors);
+
+        if (semErrors.hasErrors()) {
+          std::cerr << "\nFound " << semErrors.count() << " semantic errors:\n";
+
+          semErrors.print(std::cerr);
+          errCode = errCodes::SEMANTIC_ERROR;
+
+        } else {
+          std::cout << "\nNo semantic errors.\n";
+        }
       }
     }
   }
