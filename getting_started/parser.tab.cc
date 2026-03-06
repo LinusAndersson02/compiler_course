@@ -42,7 +42,7 @@
 
 
 // Unqualified %code blocks.
-#line 16 "parser.yy"
+#line 16 "frontend/parser.yy"
 
   #define YY_DECL yy::parser::symbol_type yylex()
   YY_DECL;
@@ -971,7 +971,7 @@ namespace yy {
           switch (yyn)
             {
   case 2: // program: global_var_list class_list entry opt_newlines "end of file"
-#line 95 "parser.yy"
+#line 95 "frontend/parser.yy"
   {
     root = mk("Program");
     root -> children.push_back(yystack_[4].value.as < Node * > ());
@@ -982,7 +982,7 @@ namespace yy {
     break;
 
   case 3: // program: stmt_block opt_newlines "end of file"
-#line 102 "parser.yy"
+#line 102 "frontend/parser.yy"
   {
     root = mk("Program");
     root->children.push_back(mk("Globals"));
@@ -996,49 +996,49 @@ namespace yy {
     break;
 
   case 4: // global_var_list: %empty
-#line 114 "parser.yy"
+#line 114 "frontend/parser.yy"
           { yylhs.value.as < Node * > () = mk("Globals"); }
 #line 1002 "parser.tab.cc"
     break;
 
   case 5: // global_var_list: global_var_list NEWLINE
-#line 115 "parser.yy"
+#line 115 "frontend/parser.yy"
                                   { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); }
 #line 1008 "parser.tab.cc"
     break;
 
   case 6: // global_var_list: global_var_list var_decl stmt_end
-#line 117 "parser.yy"
+#line 117 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = yystack_[2].value.as < Node * > (); yylhs.value.as < Node * > () -> children.push_back(mk1("GlobalVar", yystack_[1].value.as < Node * > ())); }
 #line 1014 "parser.tab.cc"
     break;
 
   case 7: // opt_newlines: %empty
-#line 120 "parser.yy"
+#line 120 "frontend/parser.yy"
                  { yylhs.value.as < Node * > () = mk("NLs"); }
 #line 1020 "parser.tab.cc"
     break;
 
   case 8: // opt_newlines: opt_newlines NEWLINE
-#line 121 "parser.yy"
+#line 121 "frontend/parser.yy"
                                { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); }
 #line 1026 "parser.tab.cc"
     break;
 
   case 9: // class_list: %empty
-#line 125 "parser.yy"
+#line 125 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = mk("Classes"); }
 #line 1032 "parser.tab.cc"
     break;
 
   case 10: // class_list: class_list class_decl
-#line 126 "parser.yy"
+#line 126 "frontend/parser.yy"
                                 { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1038 "parser.tab.cc"
     break;
 
   case 11: // class_decl: CLASS ID LBRACE class_body RBRACE opt_newlines
-#line 131 "parser.yy"
+#line 131 "frontend/parser.yy"
         {
 	 yylhs.value.as < Node * > () = mk("ClassDecl");
 	 yylhs.value.as < Node * > ()->children.push_back(mk("Id", yystack_[4].value.as < std::string > ()));
@@ -1048,31 +1048,31 @@ namespace yy {
     break;
 
   case 12: // class_body: class_member_list
-#line 139 "parser.yy"
+#line 139 "frontend/parser.yy"
                             { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1054 "parser.tab.cc"
     break;
 
   case 13: // class_member_list: %empty
-#line 143 "parser.yy"
+#line 143 "frontend/parser.yy"
                       { yylhs.value.as < Node * > () = mk("ClassBody"); }
 #line 1060 "parser.tab.cc"
     break;
 
   case 14: // class_member_list: class_member_list NEWLINE
-#line 144 "parser.yy"
+#line 144 "frontend/parser.yy"
                                     { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); }
 #line 1066 "parser.tab.cc"
     break;
 
   case 15: // class_member_list: class_member_list class_member
-#line 145 "parser.yy"
+#line 145 "frontend/parser.yy"
                                          { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1072 "parser.tab.cc"
     break;
 
   case 16: // class_member: ID class_member_tail
-#line 151 "parser.yy"
+#line 151 "frontend/parser.yy"
     {
       if (yystack_[0].value.as < Node * > ()->type == "ClassVar") {
         Node* vd = yystack_[0].value.as < Node * > ()->children.front();
@@ -1090,7 +1090,7 @@ namespace yy {
     break;
 
   case 17: // class_member: VOLATILE ID COLON type opt_init stmt_end
-#line 165 "parser.yy"
+#line 165 "frontend/parser.yy"
     {
       Node* vd = mk("VarDecl");
       vd->children.push_back(mk("Volatile","true"));
@@ -1103,7 +1103,7 @@ namespace yy {
     break;
 
   case 18: // class_member: type ID LP param_list_opt RP stmt_block
-#line 175 "parser.yy"
+#line 175 "frontend/parser.yy"
     {
       /* Allow type-first method declarations inside classes so semantic tests parse:
          e.g. int aFunc() { ... } */
@@ -1119,7 +1119,7 @@ namespace yy {
     break;
 
   case 19: // class_member_tail: COLON type opt_init stmt_end
-#line 190 "parser.yy"
+#line 190 "frontend/parser.yy"
     {
       Node* vd = mk("VarDecl");
       vd->children.push_back(mk("Volatile","false"));
@@ -1132,7 +1132,7 @@ namespace yy {
     break;
 
   case 20: // class_member_tail: COLON type LP param_list_opt RP stmt_block
-#line 200 "parser.yy"
+#line 200 "frontend/parser.yy"
     {
       yylhs.value.as < Node * > () = mk("MethodDecl");
       yylhs.value.as < Node * > ()->children.push_back(mk("Id", ""));   /* placeholder; will be overwritten */
@@ -1146,7 +1146,7 @@ namespace yy {
     break;
 
   case 21: // class_member_tail: LP param_list_opt RP COLON type stmt_block
-#line 211 "parser.yy"
+#line 211 "frontend/parser.yy"
     {
       yylhs.value.as < Node * > () = mk("MethodDecl");
       yylhs.value.as < Node * > ()->children.push_back(mk("Id", ""));   /* placeholder; will be overwritten */
@@ -1160,31 +1160,31 @@ namespace yy {
     break;
 
   case 22: // param_list_opt: %empty
-#line 224 "parser.yy"
+#line 224 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = mk("Params"); }
 #line 1166 "parser.tab.cc"
     break;
 
   case 23: // param_list_opt: param_list
-#line 225 "parser.yy"
+#line 225 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1172 "parser.tab.cc"
     break;
 
   case 24: // param_list: param
-#line 229 "parser.yy"
+#line 229 "frontend/parser.yy"
                           { yylhs.value.as < Node * > () = mk("Params"); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1178 "parser.tab.cc"
     break;
 
   case 25: // param_list: param_list COMMA param
-#line 230 "parser.yy"
+#line 230 "frontend/parser.yy"
                            { yylhs.value.as < Node * > () = yystack_[2].value.as < Node * > (); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1184 "parser.tab.cc"
     break;
 
   case 26: // param: ID COLON type
-#line 235 "parser.yy"
+#line 235 "frontend/parser.yy"
     {
       yylhs.value.as < Node * > () = mk("Param");
       yylhs.value.as < Node * > ()->children.push_back(mk("Id", yystack_[2].value.as < std::string > ()));
@@ -1194,97 +1194,97 @@ namespace yy {
     break;
 
   case 27: // entry: MAIN LP RP COLON INT_TYPE stmt_block
-#line 245 "parser.yy"
+#line 245 "frontend/parser.yy"
             { yylhs.value.as < Node * > () = mk("Entry"); yylhs.value.as < Node * > ()->children.push_back(mk("ReturnType", "int")); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1200 "parser.tab.cc"
     break;
 
   case 28: // stmt_block: LBRACE stmt_list RBRACE
-#line 250 "parser.yy"
+#line 250 "frontend/parser.yy"
  { yylhs.value.as < Node * > () = mk("StmtBlock"); yylhs.value.as < Node * > ()->children.push_back(yystack_[1].value.as < Node * > ()); }
 #line 1206 "parser.tab.cc"
     break;
 
   case 29: // stmt_list: %empty
-#line 254 "parser.yy"
+#line 254 "frontend/parser.yy"
                            { yylhs.value.as < Node * > () = mk("Stmts"); }
 #line 1212 "parser.tab.cc"
     break;
 
   case 30: // stmt_list: stmt_list NEWLINE
-#line 255 "parser.yy"
+#line 255 "frontend/parser.yy"
                            { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); }
 #line 1218 "parser.tab.cc"
     break;
 
   case 31: // stmt_list: stmt_list stmt
-#line 256 "parser.yy"
+#line 256 "frontend/parser.yy"
                            { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1224 "parser.tab.cc"
     break;
 
   case 32: // stmt_end: NEWLINE
-#line 261 "parser.yy"
+#line 261 "frontend/parser.yy"
             { yylhs.value.as < Node * > () = mk("StmtEnd"); }
 #line 1230 "parser.tab.cc"
     break;
 
   case 33: // stmt: stmt_block stmt_end
-#line 265 "parser.yy"
+#line 265 "frontend/parser.yy"
                         { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); }
 #line 1236 "parser.tab.cc"
     break;
 
   case 34: // stmt: stmt_nb
-#line 266 "parser.yy"
+#line 266 "frontend/parser.yy"
             { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1242 "parser.tab.cc"
     break;
 
   case 35: // stmt_body: stmt_block
-#line 270 "parser.yy"
+#line 270 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1248 "parser.tab.cc"
     break;
 
   case 36: // stmt_body: stmt_nb
-#line 271 "parser.yy"
+#line 271 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1254 "parser.tab.cc"
     break;
 
   case 37: // stmt_nb: var_decl stmt_end
-#line 275 "parser.yy"
+#line 275 "frontend/parser.yy"
                       { yylhs.value.as < Node * > () = mk1("VarStmt", yystack_[1].value.as < Node * > ()); }
 #line 1260 "parser.tab.cc"
     break;
 
   case 38: // stmt_nb: expr ASSIGN expr stmt_end
-#line 276 "parser.yy"
+#line 276 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = mk3("AssignStmt", yystack_[3].value.as < Node * > (), mk("Op", ":="), yystack_[1].value.as < Node * > ()); }
 #line 1266 "parser.tab.cc"
     break;
 
   case 39: // stmt_nb: expr stmt_end
-#line 277 "parser.yy"
+#line 277 "frontend/parser.yy"
                   { yylhs.value.as < Node * > () = mk1("ExprStmt", yystack_[1].value.as < Node * > ()); }
 #line 1272 "parser.tab.cc"
     break;
 
   case 40: // stmt_nb: IF LP expr RP opt_newlines stmt_body
-#line 279 "parser.yy"
+#line 279 "frontend/parser.yy"
       { yylhs.value.as < Node * > () = mk2("IfStmt", yystack_[3].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1278 "parser.tab.cc"
     break;
 
   case 41: // stmt_nb: IF LP expr RP opt_newlines stmt_body ELSE opt_newlines stmt_body
-#line 281 "parser.yy"
+#line 281 "frontend/parser.yy"
       { yylhs.value.as < Node * > () = mk3("IfElseStmt", yystack_[6].value.as < Node * > (), yystack_[3].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1284 "parser.tab.cc"
     break;
 
   case 42: // stmt_nb: FOR LP for_init_opt COMMA for_cond_opt COMMA expr ASSIGN expr RP opt_newlines stmt_body
-#line 283 "parser.yy"
+#line 283 "frontend/parser.yy"
       {
         Node* n = mk("ForStmt");
         n->children.push_back(yystack_[9].value.as < Node * > ());   /* init */
@@ -1297,73 +1297,73 @@ namespace yy {
     break;
 
   case 43: // stmt_nb: PRINT LP expr RP stmt_end
-#line 291 "parser.yy"
+#line 291 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = mk1("PrintStmt", yystack_[2].value.as < Node * > ()); }
 #line 1303 "parser.tab.cc"
     break;
 
   case 44: // stmt_nb: READ LP expr RP stmt_end
-#line 292 "parser.yy"
+#line 292 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = mk1("ReadStmt", yystack_[2].value.as < Node * > ()); }
 #line 1309 "parser.tab.cc"
     break;
 
   case 45: // stmt_nb: RETURN expr stmt_end
-#line 293 "parser.yy"
+#line 293 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk1("ReturnStmt", yystack_[1].value.as < Node * > ()); }
 #line 1315 "parser.tab.cc"
     break;
 
   case 46: // stmt_nb: BREAK stmt_end
-#line 294 "parser.yy"
+#line 294 "frontend/parser.yy"
                    { yylhs.value.as < Node * > () = mk("BreakStmt"); }
 #line 1321 "parser.tab.cc"
     break;
 
   case 47: // stmt_nb: CONTINUE stmt_end
-#line 295 "parser.yy"
+#line 295 "frontend/parser.yy"
                       { yylhs.value.as < Node * > () = mk("ContinueStmt"); }
 #line 1327 "parser.tab.cc"
     break;
 
   case 48: // for_init_opt: %empty
-#line 299 "parser.yy"
+#line 299 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = mk("ForInitEmpty"); }
 #line 1333 "parser.tab.cc"
     break;
 
   case 49: // for_init_opt: for_init
-#line 300 "parser.yy"
+#line 300 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1339 "parser.tab.cc"
     break;
 
   case 50: // for_init: var_decl
-#line 304 "parser.yy"
+#line 304 "frontend/parser.yy"
                             { yylhs.value.as < Node * > () = mk1("ForInitVar", yystack_[0].value.as < Node * > ()); }
 #line 1345 "parser.tab.cc"
     break;
 
   case 51: // for_init: expr ASSIGN expr
-#line 305 "parser.yy"
+#line 305 "frontend/parser.yy"
                           { yylhs.value.as < Node * > () = mk3("ForInitAssign", yystack_[2].value.as < Node * > (), mk("Op", ":="), yystack_[0].value.as < Node * > ()); }
 #line 1351 "parser.tab.cc"
     break;
 
   case 52: // for_cond_opt: %empty
-#line 309 "parser.yy"
+#line 309 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = mk("ForCondEmpty"); }
 #line 1357 "parser.tab.cc"
     break;
 
   case 53: // for_cond_opt: expr
-#line 310 "parser.yy"
+#line 310 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1363 "parser.tab.cc"
     break;
 
   case 54: // var_decl: ID COLON type opt_init
-#line 314 "parser.yy"
+#line 314 "frontend/parser.yy"
     {
       yylhs.value.as < Node * > () = mk("VarDecl");
       yylhs.value.as < Node * > ()->children.push_back(mk("Volatile","false"));
@@ -1375,7 +1375,7 @@ namespace yy {
     break;
 
   case 55: // var_decl: VOLATILE ID COLON type opt_init
-#line 322 "parser.yy"
+#line 322 "frontend/parser.yy"
     {
       yylhs.value.as < Node * > () = mk("VarDecl");
       yylhs.value.as < Node * > ()->children.push_back(mk("Volatile","true"));
@@ -1387,205 +1387,205 @@ namespace yy {
     break;
 
   case 56: // opt_init: %empty
-#line 333 "parser.yy"
+#line 333 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = nullptr; }
 #line 1393 "parser.tab.cc"
     break;
 
   case 57: // opt_init: ASSIGN expr
-#line 334 "parser.yy"
+#line 334 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = mk1("Init", yystack_[0].value.as < Node * > ()); }
 #line 1399 "parser.tab.cc"
     break;
 
   case 58: // type: base_type array_opt
-#line 338 "parser.yy"
+#line 338 "frontend/parser.yy"
                         { yylhs.value.as < Node * > () = mk2("Type", yystack_[1].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1405 "parser.tab.cc"
     break;
 
   case 59: // type: ID
-#line 339 "parser.yy"
+#line 339 "frontend/parser.yy"
                         { yylhs.value.as < Node * > () = mk("TypeName", yystack_[0].value.as < std::string > ()); }
 #line 1411 "parser.tab.cc"
     break;
 
   case 60: // type: VOID
-#line 340 "parser.yy"
+#line 340 "frontend/parser.yy"
                         { yylhs.value.as < Node * > () = mk("Type", "void"); }
 #line 1417 "parser.tab.cc"
     break;
 
   case 61: // base_type: INT_TYPE
-#line 344 "parser.yy"
+#line 344 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = mk("BaseType", "int"); }
 #line 1423 "parser.tab.cc"
     break;
 
   case 62: // base_type: FLOAT_TYPE
-#line 345 "parser.yy"
+#line 345 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = mk("BaseType", "float"); }
 #line 1429 "parser.tab.cc"
     break;
 
   case 63: // base_type: BOOLEAN
-#line 346 "parser.yy"
+#line 346 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = mk("BaseType", "boolean"); }
 #line 1435 "parser.tab.cc"
     break;
 
   case 64: // array_opt: %empty
-#line 350 "parser.yy"
+#line 350 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk("Array", "false"); }
 #line 1441 "parser.tab.cc"
     break;
 
   case 65: // array_opt: LBRACK RBRACK
-#line 351 "parser.yy"
+#line 351 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk("Array", "true"); }
 #line 1447 "parser.tab.cc"
     break;
 
   case 66: // expr: expr_or
-#line 355 "parser.yy"
+#line 355 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1453 "parser.tab.cc"
     break;
 
   case 67: // expr_or: expr_or OR expr_and
-#line 358 "parser.yy"
+#line 358 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk2("OrExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1459 "parser.tab.cc"
     break;
 
   case 68: // expr_or: expr_and
-#line 359 "parser.yy"
+#line 359 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1465 "parser.tab.cc"
     break;
 
   case 69: // expr_and: expr_and AND expr_cmp
-#line 363 "parser.yy"
+#line 363 "frontend/parser.yy"
                           { yylhs.value.as < Node * > () = mk2("AndExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1471 "parser.tab.cc"
     break;
 
   case 70: // expr_and: expr_cmp
-#line 364 "parser.yy"
+#line 364 "frontend/parser.yy"
                           { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1477 "parser.tab.cc"
     break;
 
   case 71: // expr_cmp: expr_add LT expr_add
-#line 368 "parser.yy"
+#line 368 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk2("LtExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1483 "parser.tab.cc"
     break;
 
   case 72: // expr_cmp: expr_add GT expr_add
-#line 369 "parser.yy"
+#line 369 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk2("GtExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1489 "parser.tab.cc"
     break;
 
   case 73: // expr_cmp: expr_add LE expr_add
-#line 370 "parser.yy"
+#line 370 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk2("LeExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1495 "parser.tab.cc"
     break;
 
   case 74: // expr_cmp: expr_add GE expr_add
-#line 371 "parser.yy"
+#line 371 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk2("GeExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1501 "parser.tab.cc"
     break;
 
   case 75: // expr_cmp: expr_add EQ expr_add
-#line 372 "parser.yy"
+#line 372 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk2("EqExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1507 "parser.tab.cc"
     break;
 
   case 76: // expr_cmp: expr_add NE expr_add
-#line 373 "parser.yy"
+#line 373 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk2("NeExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1513 "parser.tab.cc"
     break;
 
   case 77: // expr_cmp: expr_add
-#line 374 "parser.yy"
+#line 374 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1519 "parser.tab.cc"
     break;
 
   case 78: // expr_add: expr_add PLUSOP expr_mul
-#line 378 "parser.yy"
+#line 378 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = mk2("AddExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1525 "parser.tab.cc"
     break;
 
   case 79: // expr_add: expr_add MINUSOP expr_mul
-#line 379 "parser.yy"
+#line 379 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = mk2("SubExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1531 "parser.tab.cc"
     break;
 
   case 80: // expr_add: expr_mul
-#line 380 "parser.yy"
+#line 380 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1537 "parser.tab.cc"
     break;
 
   case 81: // expr_mul: expr_mul MULTOP expr_pow
-#line 384 "parser.yy"
+#line 384 "frontend/parser.yy"
                              { yylhs.value.as < Node * > () = mk2("MulExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1543 "parser.tab.cc"
     break;
 
   case 82: // expr_mul: expr_mul DIVOP expr_pow
-#line 385 "parser.yy"
+#line 385 "frontend/parser.yy"
                              { yylhs.value.as < Node * > () = mk2("DivExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1549 "parser.tab.cc"
     break;
 
   case 83: // expr_mul: expr_pow
-#line 386 "parser.yy"
+#line 386 "frontend/parser.yy"
                              { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1555 "parser.tab.cc"
     break;
 
   case 84: // expr_pow: expr_unary POWOP expr_pow
-#line 390 "parser.yy"
+#line 390 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = mk2("PowExpr", yystack_[2].value.as < Node * > (), yystack_[0].value.as < Node * > ()); }
 #line 1561 "parser.tab.cc"
     break;
 
   case 85: // expr_pow: expr_unary
-#line 391 "parser.yy"
+#line 391 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1567 "parser.tab.cc"
     break;
 
   case 86: // expr_unary: NOT expr_unary
-#line 395 "parser.yy"
+#line 395 "frontend/parser.yy"
                               { yylhs.value.as < Node * > () = mk1("NotExpr", yystack_[0].value.as < Node * > ()); }
 #line 1573 "parser.tab.cc"
     break;
 
   case 87: // expr_unary: MINUSOP expr_unary
-#line 396 "parser.yy"
+#line 396 "frontend/parser.yy"
                                     { yylhs.value.as < Node * > () = mk1("NegExpr", yystack_[0].value.as < Node * > ()); }
 #line 1579 "parser.tab.cc"
     break;
 
   case 88: // expr_unary: expr_postfix
-#line 397 "parser.yy"
+#line 397 "frontend/parser.yy"
                  { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1585 "parser.tab.cc"
     break;
 
   case 89: // expr_postfix: expr_postfix LBRACK expr RBRACK
-#line 402 "parser.yy"
+#line 402 "frontend/parser.yy"
     {
       Node* n = mk("IndexExpr");
       n->children.push_back(yystack_[3].value.as < Node * > ());
@@ -1596,7 +1596,7 @@ namespace yy {
     break;
 
   case 90: // expr_postfix: expr_postfix DOT LENGTH
-#line 409 "parser.yy"
+#line 409 "frontend/parser.yy"
     {
       Node* n = mk("LengthExpr");
       n->children.push_back(yystack_[2].value.as < Node * > ());
@@ -1606,7 +1606,7 @@ namespace yy {
     break;
 
   case 91: // expr_postfix: expr_postfix DOT ID
-#line 415 "parser.yy"
+#line 415 "frontend/parser.yy"
     {
       Node* n = mk("FieldExpr");
       n->children.push_back(yystack_[2].value.as < Node * > ());
@@ -1617,7 +1617,7 @@ namespace yy {
     break;
 
   case 92: // expr_postfix: expr_postfix LP args_opt RP
-#line 422 "parser.yy"
+#line 422 "frontend/parser.yy"
     {
       Node* n = mk("CallExpr");
       n->children.push_back(yystack_[3].value.as < Node * > ());
@@ -1628,43 +1628,43 @@ namespace yy {
     break;
 
   case 93: // expr_postfix: primary
-#line 429 "parser.yy"
+#line 429 "frontend/parser.yy"
     { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1634 "parser.tab.cc"
     break;
 
   case 94: // primary: INT
-#line 433 "parser.yy"
+#line 433 "frontend/parser.yy"
            { yylhs.value.as < Node * > () = mk("Int", yystack_[0].value.as < std::string > ()); }
 #line 1640 "parser.tab.cc"
     break;
 
   case 95: // primary: FLOAT
-#line 434 "parser.yy"
+#line 434 "frontend/parser.yy"
            { yylhs.value.as < Node * > () = mk("Float", yystack_[0].value.as < std::string > ()); }
 #line 1646 "parser.tab.cc"
     break;
 
   case 96: // primary: TRUE
-#line 435 "parser.yy"
+#line 435 "frontend/parser.yy"
            { yylhs.value.as < Node * > () = mk("Bool", "true"); }
 #line 1652 "parser.tab.cc"
     break;
 
   case 97: // primary: FALSE
-#line 436 "parser.yy"
+#line 436 "frontend/parser.yy"
            { yylhs.value.as < Node * > () = mk("Bool", "false"); }
 #line 1658 "parser.tab.cc"
     break;
 
   case 98: // primary: ID
-#line 437 "parser.yy"
+#line 437 "frontend/parser.yy"
           { yylhs.value.as < Node * > () = mk("Id", yystack_[0].value.as < std::string > ()); }
 #line 1664 "parser.tab.cc"
     break;
 
   case 99: // primary: base_type LBRACK args RBRACK
-#line 439 "parser.yy"
+#line 439 "frontend/parser.yy"
     {
       Node* n = mk("ArrayLiteral");
       n->children.push_back(yystack_[3].value.as < Node * > ());                       
@@ -1675,31 +1675,31 @@ namespace yy {
     break;
 
   case 100: // primary: LP expr RP
-#line 446 "parser.yy"
+#line 446 "frontend/parser.yy"
                { yylhs.value.as < Node * > () = yystack_[1].value.as < Node * > (); }
 #line 1681 "parser.tab.cc"
     break;
 
   case 101: // args_opt: %empty
-#line 454 "parser.yy"
+#line 454 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = nullptr; }
 #line 1687 "parser.tab.cc"
     break;
 
   case 102: // args_opt: args
-#line 455 "parser.yy"
+#line 455 "frontend/parser.yy"
                 { yylhs.value.as < Node * > () = yystack_[0].value.as < Node * > (); }
 #line 1693 "parser.tab.cc"
     break;
 
   case 103: // args: expr
-#line 459 "parser.yy"
+#line 459 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = mk("Args"); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1699 "parser.tab.cc"
     break;
 
   case 104: // args: args COMMA expr
-#line 460 "parser.yy"
+#line 460 "frontend/parser.yy"
                          { yylhs.value.as < Node * > () = yystack_[2].value.as < Node * > (); yylhs.value.as < Node * > ()->children.push_back(yystack_[0].value.as < Node * > ()); }
 #line 1705 "parser.tab.cc"
     break;
@@ -2326,4 +2326,4 @@ namespace yy {
 } // yy
 #line 2328 "parser.tab.cc"
 
-#line 463 "parser.yy"
+#line 463 "frontend/parser.yy"

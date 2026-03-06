@@ -1,4 +1,4 @@
-#include "Passes.h"
+#include "../Passes.h"
 
 #include <string>
 
@@ -21,20 +21,20 @@ static Type parseTypeNode(Node *n) {
   if (!n)
     return Type::UnknownTy();
 
-  // class type
+  // User-defined type names map to class types.
   if (n->type == "TypeName") {
     return Type::ClassTy(n->value);
   }
 
-  // void type (your grammar creates mk("Type","void"))
+  // `void` is represented as a Type node with value "void".
   if (n->type == "Type" && n->value == "void") {
     return Type::VoidTy();
   }
 
-  // primitive (with optional array)
+  // Primitive type, optionally marked as an array.
   if (n->type == "Type") {
-    Node *base = n->child(0); // BaseType
-    Node *arr = n->child(1);  // Array true|false
+    Node *base = n->child(0);
+    Node *arr = n->child(1);
 
     Type b = parseBaseType(base);
     if (!arr)
@@ -46,7 +46,7 @@ static Type parseTypeNode(Node *n) {
     return b;
   }
 
-  // sometimes you might get BaseType directly
+  // Some AST shapes provide BaseType directly.
   if (n->type == "BaseType") {
     return parseBaseType(n);
   }
@@ -58,7 +58,7 @@ static Type parseReturnType(Node *rt) {
   if (!rt)
     return Type::UnknownTy();
 
-  // Entry uses ReturnType("int") with value set
+  // Entry nodes store return type directly in ReturnType.value.
   if (!rt->value.empty()) {
     if (rt->value == "int")
       return Type::IntTy();
@@ -70,24 +70,23 @@ static Type parseReturnType(Node *rt) {
       return Type::VoidTy();
   }
 
-  // Methods use ReturnType with a child node
+  // Methods store ReturnType as a child type node.
   Node *t = rt->child(0);
   return parseTypeNode(t);
 }
 
-// Forward decl: statement traversal for local declarations
+// Statement traversal used while collecting declarations in pass 1.
 static void visitStmt(SymbolTable &st, Node *stmt, ErrorReporter &errors);
 
-// Declare a VarDecl node into current scope (as var/field/param depending on
-// kind)
+// Insert one VarDecl into the current scope and report duplicates.
 static void declareVarDecl(SymbolTable &st, Node *varDecl, SymbolKind kind,
                            ErrorReporter &errors) {
   if (!varDecl || varDecl->type != "VarDecl")
     return;
 
-  Node *volNode = varDecl->child(0); // Volatile true/false
-  Node *idNode = varDecl->child(1);  // Id
-  Node *tyNode = varDecl->child(2);  // type node
+  Node *volNode = varDecl->child(0);
+  Node *idNode = varDecl->child(1);
+  Node *tyNode = varDecl->child(2);
 
   if (!idNode || idNode->type != "Id")
     return;
@@ -118,23 +117,23 @@ static void visitStmt(SymbolTable &st, Node *stmt, ErrorReporter &errors) {
   if (!stmt)
     return;
 
-  // A block creates a new scope
+  // Blocks own their own declaration scope.
   if (stmt->type == "StmtBlock") {
     st.enterScope(Scope::Kind::Block, "block");
-    Node *stmts = stmt->child(0); // Stmts
+    Node *stmts = stmt->child(0);
     visitStmtList(st, stmts, errors);
     st.exitScope();
     return;
   }
 
-  // Var statement: declare local var in CURRENT scope
+  // Variable statements add one local symbol to the current scope.
   if (stmt->type == "VarStmt") {
     Node *varDecl = stmt->child(0);
     declareVarDecl(st, varDecl, SymbolKind::Var, errors);
     return;
   }
 
-  // If / IfElse: recurse into bodies
+  // Branch statements can contain nested declarations in their bodies.
   if (stmt->type == "IfStmt") {
     Node *thenBody = stmt->child(1);
     visitStmt(st, thenBody, errors);
@@ -149,11 +148,11 @@ static void visitStmt(SymbolTable &st, Node *stmt, ErrorReporter &errors) {
     return;
   }
 
-  // ForStmt: create a dedicated loop scope (so init var can live there)
+  // `for` introduces a scope so init declarations are loop-local.
   if (stmt->type == "ForStmt") {
     st.enterScope(Scope::Kind::For, "for");
 
-    Node *init = stmt->child(0); // ForInitEmpty | ForInitVar | ForInitAssign
+    Node *init = stmt->child(0);
     if (init && init->type == "ForInitVar") {
       Node *varDecl = init->child(0);
       declareVarDecl(st, varDecl, SymbolKind::Var, errors);
@@ -166,7 +165,7 @@ static void visitStmt(SymbolTable &st, Node *stmt, ErrorReporter &errors) {
     return;
   }
 
-  // Everything else: no declarations to add in pass 1
+  // Other statements do not introduce declarations in pass 1.
 }
 
 SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
@@ -174,14 +173,14 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
   if (!root)
     return st;
 
-  // Program -> Globals, Classes, Entry
+  // Expected AST shape: Program -> Globals, Classes, Entry.
   Node *globals = root->child(0);
   Node *classes = root->child(1);
   Node *entry = root->child(2);
 
-  // --- Globals ---
+  // Global declarations are inserted in the root scope.
   if (globals && globals->type == "Globals") {
-    for (Node *gv : globals->children) { // GlobalVar nodes
+    for (Node *gv : globals->children) {
       if (!gv || gv->type != "GlobalVar")
         continue;
       Node *varDecl = gv->child(0);
@@ -189,18 +188,18 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
     }
   }
 
-  // --- Classes ---
+  // Classes are declared in the root scope; members go in class scopes.
   if (classes && classes->type == "Classes") {
-    for (Node *cd : classes->children) { // ClassDecl nodes
+    for (Node *cd : classes->children) {
       if (!cd || cd->type != "ClassDecl")
         continue;
 
-      Node *classId = cd->child(0); // Id
-      Node *body = cd->child(1);    // ClassBody
+      Node *classId = cd->child(0);
+      Node *body = cd->child(1);
       if (!classId || classId->type != "Id")
         continue;
 
-      // declare class in global scope
+      // Register class symbol in global scope.
       {
         Symbol cls;
         cls.name = classId->value;
@@ -214,7 +213,7 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
         }
       }
 
-      // enter class scope
+      // Collect class members inside a dedicated class scope.
       st.enterScope(Scope::Kind::Class, classId->value);
 
       if (body && body->type == "ClassBody") {
@@ -222,14 +221,14 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
           if (!mem)
             continue;
 
-          // field: ClassVar -> VarDecl
+          // Field declaration.
           if (mem->type == "ClassVar") {
             Node *varDecl = mem->child(0);
             declareVarDecl(st, varDecl, SymbolKind::Field, errors);
             continue;
           }
 
-          // method: MethodDecl -> Id, Params, ReturnType, StmtBlock
+          // Method declaration plus its parameter list and body scope.
           if (mem->type == "MethodDecl") {
             Node *mid = mem->child(0);
             Node *params = mem->child(1);
@@ -245,9 +244,9 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
             m.declaredLine = mid->lineno;
             m.returnType = parseReturnType(rt);
 
-            // collect param types (and declare later inside method scope)
+            // Store parameter types on the method symbol for call checking.
             if (params && params->type == "Params") {
-              for (Node *p : params->children) { // Param nodes
+              for (Node *p : params->children) {
                 if (!p || p->type != "Param")
                   continue;
                 Node *pty = p->child(1);
@@ -260,10 +259,10 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
                                           "' in the same class scope");
             }
 
-            // method scope
+            // Enter method-local scope.
             st.enterScope(Scope::Kind::Method, m.name);
 
-            // declare params as symbols in method scope
+            // Parameters are local symbols in the method scope.
             if (params && params->type == "Params") {
               for (Node *p : params->children) {
                 if (!p || p->type != "Param")
@@ -286,20 +285,19 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
               }
             }
 
-            // method body (declares locals in nested block scopes)
+            // Walk the body to collect nested local declarations.
             visitStmt(st, mbody, errors);
 
-            st.exitScope(); // method
+            st.exitScope();
           }
         }
       }
 
-      st.exitScope(); // class
+      st.exitScope();
     }
   }
 
-  // --- Entry main() ---
-  // Entry -> ReturnType("int"), StmtBlock
+  // Entry `main` is represented as a method symbol with its own scope.
   if (entry && entry->type == "Entry") {
     Symbol mainSym;
     mainSym.name = "main";
@@ -313,7 +311,7 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
     }
 
     st.enterScope(Scope::Kind::Method, "main");
-    Node *body = entry->child(1); // StmtBlock
+    Node *body = entry->child(1);
     visitStmt(st, body, errors);
     st.exitScope();
   }

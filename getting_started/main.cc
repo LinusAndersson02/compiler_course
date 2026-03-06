@@ -1,10 +1,17 @@
+#include "backend/Bytecode.h"
+#include "backend/BytecodeEmitter.h"
+#include "backend/BytecodeIO.h"
+#include "backend/CFG.h"
+#include "backend/DotCFGPrinter.h"
 #include "ErrorReporter.h"
+#include "backend/IR.h"
 #include "Passes.h"
+#include "backend/VM.h"
 #include "parser.tab.hh"
+
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 extern Node *root;
 extern FILE *yyin;
@@ -18,12 +25,12 @@ enum errCodes {
   SYNTAX_ERROR = 2,
   AST_ERROR = 3,
   SEMANTIC_ERROR = 4,
+  VM_ERROR = 5,
   SEGMENTATION_FAULT = 139
 };
 
 int errCode = errCodes::SUCCESS;
 
-// Handling Syntax Errors
 void yy::parser::error(std::string const &err) {
   if (!lexical_errors) {
     std::cerr << "Syntax errors found! See the logs below:" << std::endl;
@@ -36,31 +43,62 @@ void yy::parser::error(std::string const &err) {
 }
 
 int main(int argc, char **argv) {
-  // Reads from file if a file name is passed as an argument. Otherwise, reads
-  // from stdin.
-  if (argc > 1) {
-    if (!(yyin = fopen(argv[1], "r"))) {
-      perror(argv[1]);
+  bool flagAst = false;
+  bool flagDumpIr = false;
+  bool flagDumpBytecode = false;
+  bool flagEmitBC = false;
+  bool flagNoVm = false;
+  std::string bcOutPath = "program.bc";
+  std::string inputPath;
+
+  for (int i = 1; i < argc; ++i) {
+    std::string a = argv[i];
+    if (a == "--ast") {
+      flagAst = true;
+    } else if (a == "--ir") {
+      flagDumpIr = true;
+    } else if (a == "--bytecode") {
+      flagDumpBytecode = true;
+    } else if (a == "--emit-bc") {
+      if (i + 1 >= argc) {
+        std::cerr << "--emit-bc expects a path\n";
+        return 1;
+      }
+      flagEmitBC = true;
+      bcOutPath = argv[++i];
+    } else if (a == "--no-vm") {
+      flagNoVm = true;
+    } else if (a.size() > 0 && a[0] == '-') {
+      std::cerr << "Unknown flag: " << a << "\n";
+      return 1;
+    } else if (inputPath.empty()) {
+      inputPath = a;
+    } else {
+      std::cerr << "Only one input file is supported\n";
       return 1;
     }
   }
-  //
-  if (USE_LEX_ONLY)
+
+  if (!inputPath.empty()) {
+    if (!(yyin = fopen(inputPath.c_str(), "r"))) {
+      perror(inputPath.c_str());
+      return 1;
+    }
+  }
+
+  if (USE_LEX_ONLY) {
     yylex();
-  else {
-    yy::parser parser;
+    return lexical_errors ? errCodes::LEXICAL_ERROR : errCodes::SUCCESS;
+  }
 
-    bool parseSuccess = !parser.parse();
+  yy::parser parser;
+  bool parseSuccess = !parser.parse();
 
-    if (lexical_errors)
-      errCode = errCodes::LEXICAL_ERROR;
+  if (lexical_errors)
+    errCode = errCodes::LEXICAL_ERROR;
 
-    if (parseSuccess && !lexical_errors) {
-      printf("\nThe compiler successfuly generated a syntax tree for the given "
-             "input! \n");
-
-      printf("\nPrint Tree:  \n");
-
+  if (parseSuccess && !lexical_errors) {
+    if (flagAst) {
       bool astOk = false;
       try {
         root->print_tree();
@@ -69,27 +107,60 @@ int main(int argc, char **argv) {
       } catch (...) {
         errCode = errCodes::AST_ERROR;
       }
+      if (!astOk)
+        return errCode;
+    }
 
-      if (astOk) {
-        ErrorReporter semErrors;
+    ErrorReporter semErrors;
+    SymbolTable st = buildSymbolTable(root, semErrors);
+    semanticAnalyze(root, st, semErrors);
 
-        SymbolTable st = buildSymbolTable(root, semErrors);
+    if (semErrors.hasErrors()) {
+      semErrors.print(std::cerr);
+      errCode = errCodes::SEMANTIC_ERROR;
+      return errCode;
+    }
 
-	std::cout << "\n--- SYMBOL TABLE (Pass 1) ---\n";
-	st.print(std::cout);
-	std::cout << "----------------------------\n";
+    IRProgram ir = buildIR(root);
+    if (flagDumpIr) {
+      std::ofstream irOut("ir.txt");
+      irOut << dumpIR(ir);
+    }
 
-        semanticAnalyze(root, st, semErrors);
+    CFGProgram cfg = buildCFG(ir);
+    writeCFGDotFiles(cfg, ir, ".");
 
-        if (semErrors.hasErrors()) {
-          std::cerr << "\nFound " << semErrors.count() << " semantic errors:\n";
+    BytecodeProgram bc = emitBytecode(ir);
 
-          semErrors.print(std::cerr);
-          errCode = errCodes::SEMANTIC_ERROR;
+    if (flagDumpBytecode) {
+      std::ofstream bcOut("bytecode.txt");
+      bcOut << disassembleBytecode(bc);
+    }
 
-        } else {
-          std::cout << "\nNo semantic errors.\n";
-        }
+    if (flagEmitBC) {
+      std::string ioErr;
+      if (!saveBytecode(bc, bcOutPath, ioErr)) {
+        std::cerr << "Bytecode write error: " << ioErr << "\n";
+        return 1;
+      }
+    }
+
+    if (!ir.warnings.empty()) {
+      for (size_t i = 0; i < ir.warnings.size(); ++i)
+        std::cerr << "IR warning: " << ir.warnings[i] << "\n";
+    }
+
+    if (!bc.warnings.empty()) {
+      for (size_t i = 0; i < bc.warnings.size(); ++i)
+        std::cerr << "Bytecode warning: " << bc.warnings[i] << "\n";
+    }
+
+    if (!flagNoVm) {
+      VMResult res = runBytecode(bc);
+      if (!res.error.empty()) {
+        errCode = errCodes::VM_ERROR;
+      } else {
+        errCode = res.exitCode;
       }
     }
   }

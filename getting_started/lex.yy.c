@@ -1,9 +1,10 @@
+#line 2 "lex.yy.c"
     #include "parser.tab.hh"
     #define YY_DECL yy::parser::symbol_type yylex()
     #include "Node.h"
     int lexical_errors = 0;
 
-#line 7 "lex.yy.c"
+#line 8 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -554,10 +555,10 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "lexer.flex"
+#line 1 "frontend/lexer.flex"
 
 #define YY_NO_INPUT 1
-#line 561 "lex.yy.c"
+#line 562 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -782,11 +783,11 @@ YY_DECL
 		}
 
 	{
-#line 13 "lexer.flex"
+#line 13 "frontend/lexer.flex"
 
 
 
-#line 790 "lex.yy.c"
+#line 791 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -851,222 +852,222 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 16 "lexer.flex"
+#line 16 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("ASSIGN "); }   else { return yy::parser::make_ASSIGN(yytext); } }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 17 "lexer.flex"
+#line 17 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("LE "); }       else { return yy::parser::make_LE(yytext); } }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 18 "lexer.flex"
+#line 18 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("GE "); }       else { return yy::parser::make_GE(yytext); } }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 19 "lexer.flex"
+#line 19 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("NE "); }       else { return yy::parser::make_NE(yytext); } }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 21 "lexer.flex"
+#line 21 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("LT "); }       else { return yy::parser::make_LT(yytext); } }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 22 "lexer.flex"
+#line 22 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("GT "); }       else { return yy::parser::make_GT(yytext); } }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 23 "lexer.flex"
+#line 23 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("EQ "); }       else { return yy::parser::make_EQ(yytext); } }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 25 "lexer.flex"
+#line 25 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("AND "); }      else { return yy::parser::make_AND(yytext); } }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 26 "lexer.flex"
+#line 26 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("OR "); }       else { return yy::parser::make_OR(yytext); } }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 27 "lexer.flex"
+#line 27 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("NOT "); }      else { return yy::parser::make_NOT(yytext); } }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 29 "lexer.flex"
+#line 29 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("PLUSOP "); }   else { return yy::parser::make_PLUSOP(yytext); } }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 30 "lexer.flex"
+#line 30 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("MINUSOP "); }  else { return yy::parser::make_MINUSOP(yytext); } }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 31 "lexer.flex"
+#line 31 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("MULTOP "); }   else { return yy::parser::make_MULTOP(yytext); } }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 32 "lexer.flex"
+#line 32 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("DIVOP "); }    else { return yy::parser::make_DIVOP(yytext); } }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 33 "lexer.flex"
+#line 33 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("POWOP "); }    else { return yy::parser::make_POWOP(yytext); } }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 35 "lexer.flex"
+#line 35 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("LP "); }       else { return yy::parser::make_LP(yytext); } }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 36 "lexer.flex"
+#line 36 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("RP "); }       else { return yy::parser::make_RP(yytext); } }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 37 "lexer.flex"
+#line 37 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("LBRACE "); }   else { return yy::parser::make_LBRACE(yytext); } }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 38 "lexer.flex"
+#line 38 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("RBRACE "); }   else { return yy::parser::make_RBRACE(yytext); } }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 39 "lexer.flex"
+#line 39 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("LBRACK "); }   else { return yy::parser::make_LBRACK(yytext); } }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 40 "lexer.flex"
+#line 40 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("RBRACK "); }   else { return yy::parser::make_RBRACK(yytext); } }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 41 "lexer.flex"
+#line 41 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("COMMA "); }    else { return yy::parser::make_COMMA(yytext); } }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 42 "lexer.flex"
+#line 42 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("COLON "); }    else { return yy::parser::make_COLON(yytext); } }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 43 "lexer.flex"
+#line 43 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("DOT "); }      else { return yy::parser::make_DOT(yytext); } }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 45 "lexer.flex"
+#line 45 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("CLASS "); }      else { return yy::parser::make_CLASS(yytext); } }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 46 "lexer.flex"
+#line 46 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("MAIN "); }       else { return yy::parser::make_MAIN(yytext); } }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 47 "lexer.flex"
+#line 47 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("VOID "); }       else { return yy::parser::make_VOID(yytext); } }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 48 "lexer.flex"
+#line 48 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("INT_TYPE "); }   else { return yy::parser::make_INT_TYPE(yytext); } }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 49 "lexer.flex"
+#line 49 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("FLOAT_TYPE "); } else { return yy::parser::make_FLOAT_TYPE(yytext); } }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 50 "lexer.flex"
+#line 50 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("BOOLEAN "); }    else { return yy::parser::make_BOOLEAN(yytext); } }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 51 "lexer.flex"
+#line 51 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("VOLATILE "); }   else { return yy::parser::make_VOLATILE(yytext); } }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 53 "lexer.flex"
+#line 53 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("IF "); }         else { return yy::parser::make_IF(yytext); } }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 54 "lexer.flex"
+#line 54 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("ELSE "); }       else { return yy::parser::make_ELSE(yytext); } }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 55 "lexer.flex"
+#line 55 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("FOR "); }        else { return yy::parser::make_FOR(yytext); } }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 56 "lexer.flex"
+#line 56 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("RETURN "); }     else { return yy::parser::make_RETURN(yytext); } }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 57 "lexer.flex"
+#line 57 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("BREAK "); }      else { return yy::parser::make_BREAK(yytext); } }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 58 "lexer.flex"
+#line 58 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("CONTINUE "); }   else { return yy::parser::make_CONTINUE(yytext); } }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 59 "lexer.flex"
+#line 59 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("PRINT "); }      else { return yy::parser::make_PRINT(yytext); } }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 60 "lexer.flex"
+#line 60 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("READ "); }       else { return yy::parser::make_READ(yytext); } }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 62 "lexer.flex"
+#line 62 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("TRUE "); }       else { return yy::parser::make_TRUE(yytext); } }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 63 "lexer.flex"
+#line 63 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("FALSE "); }      else { return yy::parser::make_FALSE(yytext); } }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 64 "lexer.flex"
+#line 64 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("LENGTH "); }     else { return yy::parser::make_LENGTH(yytext); } }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 66 "lexer.flex"
+#line 66 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("FLOAT "); } else { return yy::parser::make_FLOAT(yytext); } }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 68 "lexer.flex"
+#line 68 "frontend/lexer.flex"
 {
         if(!lexical_errors) fprintf(stderr, "Lexical errors found! See logs below:\n");
         fprintf(stderr, "Lexical error at line %d: leading zero in integer %s\n", yylineno, yytext);
@@ -1076,33 +1077,33 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 75 "lexer.flex"
+#line 75 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("INT "); } else { return yy::parser::make_INT(yytext); } }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 77 "lexer.flex"
+#line 77 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("ID "); } else { return yy::parser::make_ID(yytext); } }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 79 "lexer.flex"
+#line 79 "frontend/lexer.flex"
 {}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 81 "lexer.flex"
+#line 81 "frontend/lexer.flex"
 {}
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 83 "lexer.flex"
+#line 83 "frontend/lexer.flex"
 { if(USE_LEX_ONLY) { printf("NEWLINE "); } else { return yy::parser::make_NEWLINE(yytext); } }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 85 "lexer.flex"
+#line 85 "frontend/lexer.flex"
 {
     if(!lexical_errors) fprintf(stderr, "Lexical errors found! See the logs below: \n");
     fprintf(stderr,"\t@error at line %d. Character %s is not recognized\n", yylineno, yytext);
@@ -1110,7 +1111,7 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 91 "lexer.flex"
+#line 91 "frontend/lexer.flex"
 {
     if(USE_LEX_ONLY) { printf("\n"); fflush(stdout); }
     return yy::parser::make_END();
@@ -1118,10 +1119,10 @@ case YY_STATE_EOF(INITIAL):
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 96 "lexer.flex"
+#line 96 "frontend/lexer.flex"
 ECHO;
 	YY_BREAK
-#line 1125 "lex.yy.c"
+#line 1126 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2142,6 +2143,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 96 "lexer.flex"
+#line 96 "frontend/lexer.flex"
 
 

@@ -1,0 +1,4 @@
+digraph CFG_main {
+  node [shape=box, fontname="monospace"];
+  bb0 [label="BB0:\l_t0 = #I:4 * #I:2\l_t1 = #I:2 ^ _t0\l_t2 = _t1 + #I:10\l_t3 = #I:2 * #I:6\l_t4 = _t2 - _t3\l_t5 = #F:1.0 / #F:4.0\l_t6 = _t4 + _t5\l_t7 = _t6 * #I:2\lresult = _t7\lprint result\lret #I:0\l"];
+}
