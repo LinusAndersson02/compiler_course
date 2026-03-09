@@ -13,4 +13,4 @@ lex.yy.c: frontend/lexer.flex parser.tab.cc
 tree: 
 		 dot -Tpdf tree.dot -otree.pdf
 clean:
-		rm -f parser.tab.* lex.yy.c* compiler interpreter stack.hh position.hh location.hh tree.dot tree.pdf ir.txt bytecode.txt cfg_*.dot program.bc
+		rm -f parser.tab.* parser.output lex.yy.c* compiler interpreter stack.hh position.hh location.hh tree.dot tree.pdf ir.txt bytecode.txt cfg_*.dot cfg_*.pdf program.bc output.txt

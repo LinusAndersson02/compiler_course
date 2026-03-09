@@ -1,0 +1,7 @@
+main(): int {
+  volatile total: int := 0
+  for (volatile i: int := 0, i < limit, i := i + 1) {
+    total := total + i
+  }
+  return 0
+}

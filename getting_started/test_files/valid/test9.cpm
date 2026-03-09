@@ -1,0 +1,20 @@
+class Accumulator {
+  volatile total: int
+
+  init(start: int): int {
+    total := start
+    return total
+  }
+
+  add(value: int): int {
+    total := total + value
+    return total
+  }
+}
+
+main(): int {
+  volatile acc: Accumulator := Accumulator()
+  print(acc.init(10))
+  print(acc.add(5))
+  return 0
+}

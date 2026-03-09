@@ -2,7 +2,7 @@ class MyClass {
   Init(): boolean {
     volatile test: int
 
-    test := Init //@error - syntax (missing argument list in method call)
+    test := Init(1,)
 
     return false
   }

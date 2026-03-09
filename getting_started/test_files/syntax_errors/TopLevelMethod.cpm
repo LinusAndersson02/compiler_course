@@ -1,0 +1,7 @@
+helper(x: int): int {
+  return x
+}
+
+main(): int {
+  return 0
+}

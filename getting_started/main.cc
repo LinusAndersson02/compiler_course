@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
   bool flagDumpBytecode = false;
   bool flagEmitBC = false;
   bool flagNoVm = false;
+  bool flagSymbolsOnly = false;
   std::string bcOutPath = "program.bc";
   std::string inputPath;
 
@@ -68,6 +69,8 @@ int main(int argc, char **argv) {
       bcOutPath = argv[++i];
     } else if (a == "--no-vm") {
       flagNoVm = true;
+    } else if (a == "--symbols-only") {
+      flagSymbolsOnly = true;
     } else if (a.size() > 0 && a[0] == '-') {
       std::cerr << "Unknown flag: " << a << "\n";
       return 1;
@@ -113,6 +116,7 @@ int main(int argc, char **argv) {
 
     ErrorReporter semErrors;
     SymbolTable st = buildSymbolTable(root, semErrors);
+    st.print(std::cout);
     semanticAnalyze(root, st, semErrors);
 
     if (semErrors.hasErrors()) {
@@ -120,6 +124,9 @@ int main(int argc, char **argv) {
       errCode = errCodes::SEMANTIC_ERROR;
       return errCode;
     }
+
+    if (flagSymbolsOnly)
+      return errCode;
 
     IRProgram ir = buildIR(root);
     if (flagDumpIr) {
@@ -130,7 +137,7 @@ int main(int argc, char **argv) {
     CFGProgram cfg = buildCFG(ir);
     writeCFGDotFiles(cfg, ir, ".");
 
-    BytecodeProgram bc = emitBytecode(ir);
+    BytecodeProgram bc = emitBytecode(ir, cfg);
 
     if (flagDumpBytecode) {
       std::ofstream bcOut("bytecode.txt");

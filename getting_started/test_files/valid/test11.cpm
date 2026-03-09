@@ -1,0 +1,48 @@
+volatile globalLimit: int := 4
+volatile globalSeed: int := 1
+
+class Accumulator {
+  volatile total: int
+
+  init(start: int): void {
+    total := start
+  }
+
+  add(value: int): void {
+    total := total + value
+  }
+
+  get(): int {
+    return total
+  }
+}
+
+class Reporter {
+  summarize(limit: int): int {
+    volatile sum: int := 0
+
+    for (volatile i: int := 0, i < limit, i := i + 1) {
+      {
+        volatile step: int := i + globalSeed
+        sum := sum + step
+      }
+    }
+
+    return sum
+  }
+}
+
+main(): int {
+  volatile reporter: Reporter := Reporter()
+  volatile acc: Accumulator := Accumulator()
+  volatile value: int := reporter.summarize(globalLimit)
+
+  acc.init(value)
+
+  {
+    volatile printed: int := acc.get()
+    print(printed)
+  }
+
+  return 0
+}

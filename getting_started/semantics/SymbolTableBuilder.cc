@@ -98,6 +98,13 @@ static void declareVarDecl(SymbolTable &st, Node *varDecl, SymbolKind kind,
   sym.isVolatile = (volNode && volNode->value == "true");
   sym.type = parseTypeNode(tyNode);
 
+  if (st.existsInChain(sym.name)) {
+    errors.add(idNode->lineno,
+               "Redeclaration of identifier '" + sym.name +
+                   "' in the same or enclosing scope");
+    return;
+  }
+
   if (!st.declareLocal(sym)) {
     errors.add(idNode->lineno,
                "Duplicate identifier '" + sym.name + "' in the same scope");
@@ -207,7 +214,7 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
         cls.declaredLine = classId->lineno;
         cls.type = Type::ClassTy(cls.name);
 
-        if (!st.declareLocal(cls)) {
+        if (st.existsInChain(cls.name) || !st.declareLocal(cls)) {
           errors.add(classId->lineno,
                      "Duplicate class '" + cls.name + "' in global scope");
         }
@@ -254,7 +261,11 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
               }
             }
 
-            if (!st.declareLocal(m)) {
+            if (st.existsInChain(m.name)) {
+              errors.add(mid->lineno,
+                         "Redeclaration of identifier '" + m.name +
+                             "' in the same or enclosing scope");
+            } else if (!st.declareLocal(m)) {
               errors.add(mid->lineno, "Duplicate method '" + m.name +
                                           "' in the same class scope");
             }
@@ -278,7 +289,11 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
                 ps.declaredLine = pid->lineno;
                 ps.type = parseTypeNode(pty);
 
-                if (!st.declareLocal(ps)) {
+                if (st.existsInChain(ps.name)) {
+                  errors.add(pid->lineno,
+                             "Redeclaration of identifier '" + ps.name +
+                                 "' in the same or enclosing scope");
+                } else if (!st.declareLocal(ps)) {
                   errors.add(pid->lineno, "Duplicate parameter '" + ps.name +
                                               "' in method '" + m.name + "'");
                 }
@@ -305,7 +320,7 @@ SymbolTable buildSymbolTable(Node *root, ErrorReporter &errors) {
     mainSym.declaredLine = entry->lineno;
     mainSym.returnType = Type::IntTy();
 
-    if (!st.declareLocal(mainSym)) {
+    if (st.existsInChain(mainSym.name) || !st.declareLocal(mainSym)) {
       errors.add(entry->lineno,
                  "Duplicate entry method 'main' in global scope");
     }

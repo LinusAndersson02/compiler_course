@@ -1,0 +1,9 @@
+class Box {
+  value: int
+}
+
+main(): int {
+  volatile box: Box := Box()
+  print(box.missing)
+  return 0
+}

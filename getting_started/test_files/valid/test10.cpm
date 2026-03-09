@@ -1,0 +1,19 @@
+class Blocks {
+  compute(limit: int): int {
+    volatile sum: int := 0
+
+    for (volatile i: int := 0, i < limit, i := i + 1) {
+      {
+        volatile nextValue: int := i + 1
+        sum := sum + nextValue
+      }
+    }
+
+    return sum
+  }
+}
+
+main(): int {
+  print(Blocks().compute(4))
+  return 0
+}

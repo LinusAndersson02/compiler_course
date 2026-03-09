@@ -1,6 +1,5 @@
-
 class NoMainMethod {
-    display(): void { // @error - syntax (No main method, which is required by the grammar)
-        print(1);
-    }
+  display(): void {
+    print(1)
+  }
 }

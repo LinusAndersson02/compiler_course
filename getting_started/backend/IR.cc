@@ -21,6 +21,8 @@ class IRBuilder {
 public:
   IRProgram run(Node *root) {
     root_ = root;
+    // Gather names up front so later lowering can resolve globals, fields,
+    // constructors, and method calls without re-walking the AST.
     collectMetadata();
     buildMethods();
     buildMain();
@@ -157,6 +159,7 @@ private:
     std::string fullName = currentClass_ + "." + id->value;
 
     std::vector<std::string> paramNames;
+    // Methods are lowered as plain functions with an explicit receiver slot.
     paramNames.push_back("this");
     if (params && params->type == "Params") {
       for (Node *p : params->children) {
@@ -215,6 +218,8 @@ private:
     labelCounter_ = 0;
     sawReturn_ = false;
 
+    // Each function starts with a fresh local-name scope used only by the
+    // IR builder to create unique slot names.
     pushScope();
     for (size_t i = 0; i < params.size(); ++i) {
       std::string unique = declareName(params[i]);
@@ -238,6 +243,8 @@ private:
     if (scopes_.empty())
       pushScope();
 
+    // Preserve the source-level name when possible, but keep IR locals unique
+    // inside the current scope by appending a numeric suffix when needed.
     std::string unique = name;
     int salt = 1;
     while (scopes_.back().find(unique) != scopes_.back().end()) {
@@ -313,6 +320,7 @@ private:
       return;
 
     if (s->type == "StmtBlock") {
+      // Blocks only affect local-name resolution during lowering.
       pushScope();
       Node *stmts = s->child(0);
       if (stmts && stmts->type == "Stmts") {
@@ -331,7 +339,7 @@ private:
 
     if (s->type == "AssignStmt") {
       std::string rhs = compileExpr(s->child(2));
-      compileLValueAssign(s->child(0), rhs);
+      compileAssignTarget(s->child(0), rhs);
       return;
     }
 
@@ -363,7 +371,7 @@ private:
 
       std::string tmp = newTemp();
       emit(IRKind::Read, "", tmp);
-      compileLValueAssign(target, tmp);
+      compileAssignTarget(target, tmp);
       return;
     }
 
@@ -389,6 +397,7 @@ private:
       std::string cond = compileExpr(s->child(0));
       std::string lThen = newLabel("if_then");
       std::string lEnd = newLabel("if_end");
+      // A conditional jump plus labels is enough to describe structured `if`.
       emit(IRKind::CJump, "", cond, lThen, lEnd);
       emit(IRKind::Label, "", lThen);
       compileStmt(s->child(1));
@@ -401,6 +410,7 @@ private:
       std::string lThen = newLabel("if_then");
       std::string lElse = newLabel("if_else");
       std::string lEnd = newLabel("if_end");
+      // The else branch is made explicit with a second target and a merge label.
       emit(IRKind::CJump, "", cond, lThen, lElse);
 
       emit(IRKind::Label, "", lThen);
@@ -422,7 +432,7 @@ private:
         compileVarDecl(init->child(0), false);
       } else if (init && init->type == "ForInitAssign") {
         std::string rhs = compileExpr(init->child(2));
-        compileLValueAssign(init->child(0), rhs);
+        compileAssignTarget(init->child(0), rhs);
       }
 
       std::string lCond = newLabel("for_cond");
@@ -430,6 +440,7 @@ private:
       std::string lUpdate = newLabel("for_update");
       std::string lEnd = newLabel("for_end");
 
+      // Loops are lowered into explicit condition/body/update/end labels.
       emit(IRKind::Label, "", lCond);
       Node *cond = s->child(1);
       if (cond && !isEmptyForCond(cond)) {
@@ -448,7 +459,7 @@ private:
       Node *upd = s->child(2);
       if (upd && upd->type == "Update") {
         std::string rhs = compileExpr(upd->child(2));
-        compileLValueAssign(upd->child(0), rhs);
+        compileAssignTarget(upd->child(0), rhs);
       }
 
       emit(IRKind::Jump, "", lCond);
@@ -501,6 +512,8 @@ private:
         e->type == "OrExpr") {
       std::string lhs = compileExpr(e->child(0));
       std::string rhs = compileExpr(e->child(1));
+      // Complex expressions are flattened by storing intermediate values in
+      // compiler-generated temporaries.
       std::string t = newTemp();
       emit(IRKind::BinOp, t, lhs, rhs, "", mapBinOp(e->type));
       return t;
@@ -575,6 +588,7 @@ private:
       std::string name = callee->value;
 
       if (classes_.find(name) != classes_.end()) {
+        // Calling a class name lowers to object construction.
         std::string t = newTemp();
         emit(IRKind::NewObject, t, "", "", "", name);
         return t;
@@ -586,6 +600,7 @@ private:
         if (it != classes_.end() &&
             it->second.methodByShort.find(name) != it->second.methodByShort.end()) {
           std::string thisSym = resolveName("this");
+          // Unqualified method calls inside a class become calls on `this`.
           if (!thisSym.empty())
             args.insert(args.begin(), thisSym);
         }
@@ -603,6 +618,7 @@ private:
       std::string method = (mid && mid->type == "Id") ? mid->value : "";
 
       std::vector<std::string> callArgs;
+      // Member calls become normal calls with the receiver as argument 0.
       callArgs.push_back(obj);
       callArgs.insert(callArgs.end(), args.begin(), args.end());
 
@@ -625,6 +641,7 @@ private:
     if (currentClassHasField(name)) {
       std::string self = resolveName("this");
       if (!self.empty()) {
+        // Unqualified field reads inside a method are lowered via `this.field`.
         std::string t = newTemp();
         emit(IRKind::FieldGet, t, self, "", "", name);
         return t;
@@ -634,7 +651,7 @@ private:
     return name;
   }
 
-  void compileLValueAssign(Node *lhs, const std::string &rhs) {
+  void compileAssignTarget(Node *lhs, const std::string &rhs) {
     if (!lhs)
       return;
 
@@ -653,6 +670,7 @@ private:
       if (currentClassHasField(lhs->value)) {
         std::string self = resolveName("this");
         if (!self.empty()) {
+          // Unqualified field writes inside a method are lowered via `this.field`.
           emit(IRKind::FieldSet, "", self, rhs, "", lhs->value);
           return;
         }

@@ -1,25 +1,61 @@
 #include "../Passes.h"
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
-// Returns true when a name exists in the current scope chain.
-static bool isDeclared(const Scope *scope, const std::string &name) {
-  for (const Scope *s = scope; s != nullptr; s = s->parent) {
-    if (s->symbols.find(name) != s->symbols.end())
-      return true;
+typedef std::unordered_map<const Scope *, std::unordered_set<std::string> > ActiveNames;
+
+static void primeScope(const Scope *scope, ActiveNames &active) {
+  if (!scope)
+    return;
+
+  if (active.find(scope) != active.end())
+    return;
+
+  std::unordered_set<std::string> &names = active[scope];
+  for (const auto &entry : scope->symbols) {
+    const Symbol &sym = entry.second;
+    bool visibleNow = false;
+    if (scope->kind == Scope::Kind::Global) {
+      visibleNow = sym.kind == SymbolKind::Class || sym.kind == SymbolKind::Method;
+    } else if (scope->kind == Scope::Kind::Class) {
+      visibleNow = sym.kind == SymbolKind::Field || sym.kind == SymbolKind::Method;
+    } else if (scope->kind == Scope::Kind::Method) {
+      visibleNow = sym.kind == SymbolKind::Param;
+    }
+
+    if (visibleNow)
+      names.insert(sym.name);
   }
-  return false;
 }
 
-// Resolves a symbol by walking current scope -> parent scopes.
-static const Symbol *lookupInChain(const Scope *scope, const std::string &name) {
+static void activateName(const Scope *scope, const std::string &name, ActiveNames &active) {
+  if (!scope)
+    return;
+  active[scope].insert(name);
+}
+
+// Resolves a symbol by walking the current scope chain, but only through names
+// that are visible at the current traversal point in pass 2.
+static const Symbol *lookupVisibleInChain(const Scope *scope, const ActiveNames &active,
+                                          const std::string &name) {
   for (const Scope *s = scope; s != nullptr; s = s->parent) {
+    std::unordered_map<const Scope *, std::unordered_set<std::string> >::const_iterator vis =
+        active.find(s);
+    if (vis == active.end() || vis->second.find(name) == vis->second.end())
+      continue;
+
     std::unordered_map<std::string, Symbol>::const_iterator it = s->symbols.find(name);
     if (it != s->symbols.end())
       return &it->second;
   }
   return nullptr;
+}
+
+static bool mustBeDeclaredBeforeUse(const Symbol &sym) {
+  return sym.kind == SymbolKind::Var || sym.kind == SymbolKind::Param;
 }
 
 static const Scope *findClassScope(const Scope *scope, const std::string &className) {
@@ -84,11 +120,12 @@ struct ScopeCursor {
 
 // Forward declarations for recursive statement/expression checks.
 static void checkStmt(Node *s, const SymbolTable &st, ScopeCursor &sc,
-                      ErrorReporter &errors);
+                      ActiveNames &active, ErrorReporter &errors);
 static void checkExpr(Node *e, const SymbolTable &st, ScopeCursor &sc,
-                      ErrorReporter &errors);
+                      ActiveNames &active, ErrorReporter &errors);
 
-static Type inferExprType(Node *e, const SymbolTable &st, ScopeCursor &sc) {
+static Type inferExprType(Node *e, const SymbolTable &st, ScopeCursor &sc,
+                          const ActiveNames &active) {
   if (!e)
     return Type::UnknownTy();
 
@@ -102,7 +139,7 @@ static Type inferExprType(Node *e, const SymbolTable &st, ScopeCursor &sc) {
     return Type::IntTy();
 
   if (e->type == "Id") {
-    const Symbol *sym = lookupInChain(sc.cur, e->value);
+    const Symbol *sym = lookupVisibleInChain(sc.cur, active, e->value);
     if (!sym)
       return Type::UnknownTy();
     if (sym->kind == SymbolKind::Method)
@@ -126,14 +163,14 @@ static Type inferExprType(Node *e, const SymbolTable &st, ScopeCursor &sc) {
   }
 
   if (e->type == "IndexExpr") {
-    Type t = inferExprType(e->child(0), st, sc);
+    Type t = inferExprType(e->child(0), st, sc, active);
     if (t.isArray())
       return t.base();
     return Type::UnknownTy();
   }
 
   if (e->type == "FieldExpr") {
-    Type recv = inferExprType(e->child(0), st, sc);
+    Type recv = inferExprType(e->child(0), st, sc, active);
     Node *mid = e->child(1);
     if (!recv.isClass() || !mid || mid->type != "Id")
       return Type::UnknownTy();
@@ -152,7 +189,7 @@ static Type inferExprType(Node *e, const SymbolTable &st, ScopeCursor &sc) {
       return Type::UnknownTy();
 
     if (callee->type == "Id") {
-      const Symbol *sym = lookupInChain(sc.cur, callee->value);
+      const Symbol *sym = lookupVisibleInChain(sc.cur, active, callee->value);
       if (!sym)
         return Type::UnknownTy();
       if (sym->kind == SymbolKind::Method)
@@ -163,7 +200,7 @@ static Type inferExprType(Node *e, const SymbolTable &st, ScopeCursor &sc) {
     }
 
     if (callee->type == "FieldExpr") {
-      Type recv = inferExprType(callee->child(0), st, sc);
+      Type recv = inferExprType(callee->child(0), st, sc, active);
       Node *mid = callee->child(1);
       if (!recv.isClass() || !mid || mid->type != "Id")
         return Type::UnknownTy();
@@ -177,13 +214,12 @@ static Type inferExprType(Node *e, const SymbolTable &st, ScopeCursor &sc) {
   return Type::UnknownTy();
 }
 
-// Validates an identifier used as an expression value.
 static void checkIdUse(Node *idNode, const SymbolTable &st, ScopeCursor &sc,
-                       ErrorReporter &errors) {
+                       ActiveNames &active, ErrorReporter &errors) {
   if (!idNode || idNode->type != "Id")
     return;
 
-  const Symbol *sym = lookupInChain(sc.cur, idNode->value);
+  const Symbol *sym = lookupVisibleInChain(sc.cur, active, idNode->value);
   if (!sym) {
     errors.add(idNode->lineno, "Undeclared identifier '" + idNode->value + "'");
     return;
@@ -197,12 +233,12 @@ static void checkIdUse(Node *idNode, const SymbolTable &st, ScopeCursor &sc,
 }
 
 static void checkExpr(Node *e, const SymbolTable &st, ScopeCursor &sc,
-                      ErrorReporter &errors) {
+                      ActiveNames &active, ErrorReporter &errors) {
   if (!e)
     return;
 
   if (e->type == "Id") {
-    checkIdUse(e, st, sc, errors);
+    checkIdUse(e, st, sc, active, errors);
     return;
   }
 
@@ -210,9 +246,9 @@ static void checkExpr(Node *e, const SymbolTable &st, ScopeCursor &sc,
     Node *recv = e->child(0);
     Node *member = e->child(1);
 
-    checkExpr(recv, st, sc, errors);
+    checkExpr(recv, st, sc, active, errors);
 
-    Type recvTy = inferExprType(recv, st, sc);
+    Type recvTy = inferExprType(recv, st, sc, active);
     if (recvTy.isClass() && member && member->type == "Id") {
       if (!lookupClassMember(st, recvTy.className, member->value)) {
         errors.add(member->lineno,
@@ -228,7 +264,8 @@ static void checkExpr(Node *e, const SymbolTable &st, ScopeCursor &sc,
 
     if (callee) {
       if (callee->type == "Id") {
-        const Symbol *sym = lookupInChain(sc.cur, callee->value);
+        const Symbol *sym =
+            lookupVisibleInChain(sc.cur, active, callee->value);
         if (!sym) {
           errors.add(callee->lineno,
                      "Undeclared identifier '" + callee->value + "'");
@@ -236,9 +273,9 @@ static void checkExpr(Node *e, const SymbolTable &st, ScopeCursor &sc,
       } else if (callee->type == "FieldExpr") {
         Node *recv = callee->child(0);
         Node *member = callee->child(1);
-        checkExpr(recv, st, sc, errors);
+        checkExpr(recv, st, sc, active, errors);
 
-        Type recvTy = inferExprType(recv, st, sc);
+        Type recvTy = inferExprType(recv, st, sc, active);
         if (recvTy.isClass() && member && member->type == "Id") {
           const Symbol *mem =
               lookupClassMember(st, recvTy.className, member->value);
@@ -248,39 +285,40 @@ static void checkExpr(Node *e, const SymbolTable &st, ScopeCursor &sc,
           }
         }
       } else {
-        checkExpr(callee, st, sc, errors);
+        checkExpr(callee, st, sc, active, errors);
       }
     }
 
     if (args && args->type == "Args") {
       for (Node *a : args->children)
-        checkExpr(a, st, sc, errors);
+        checkExpr(a, st, sc, active, errors);
     }
     return;
   }
 
   // Default case: recurse through children and validate identifiers there.
   for (Node *c : e->children)
-    checkExpr(c, st, sc, errors);
+    checkExpr(c, st, sc, active, errors);
 }
 
 static void checkStmtList(Node *stmts, const SymbolTable &st, ScopeCursor &sc,
-                          ErrorReporter &errors) {
+                          ActiveNames &active, ErrorReporter &errors) {
   if (!stmts || stmts->type != "Stmts")
     return;
   for (Node *s : stmts->children)
-    checkStmt(s, st, sc, errors);
+    checkStmt(s, st, sc, active, errors);
 }
 
 static void checkStmt(Node *s, const SymbolTable &st, ScopeCursor &sc,
-                      ErrorReporter &errors) {
+                      ActiveNames &active, ErrorReporter &errors) {
   if (!s)
     return;
 
   if (s->type == "StmtBlock") {
     // Enter the corresponding block scope from pass 1.
     sc.enterNext(errors, s->lineno);
-    checkStmtList(s->child(0), st, sc, errors);
+    primeScope(sc.cur, active);
+    checkStmtList(s->child(0), st, sc, active, errors);
     sc.exit();
     return;
   }
@@ -290,68 +328,75 @@ static void checkStmt(Node *s, const SymbolTable &st, ScopeCursor &sc,
     Node *vd = s->child(0);
     Node *init = vd ? vd->child(3) : nullptr;
     if (init && init->type == "Init") {
-      checkExpr(init->child(0), st, sc, errors);
+      checkExpr(init->child(0), st, sc, active, errors);
     }
+    Node *id = vd ? vd->child(1) : nullptr;
+    if (id && id->type == "Id")
+      activateName(sc.cur, id->value, active);
     return;
   }
 
   if (s->type == "AssignStmt") {
     // Validate both assignment target expression and source expression.
-    checkExpr(s->child(0), st, sc, errors);
-    checkExpr(s->child(2), st, sc, errors);
+    checkExpr(s->child(0), st, sc, active, errors);
+    checkExpr(s->child(2), st, sc, active, errors);
     return;
   }
 
   if (s->type == "ExprStmt") {
-    checkExpr(s->child(0), st, sc, errors);
+    checkExpr(s->child(0), st, sc, active, errors);
     return;
   }
 
   if (s->type == "IfStmt") {
-    checkExpr(s->child(0), st, sc, errors);
-    checkStmt(s->child(1), st, sc, errors);
+    checkExpr(s->child(0), st, sc, active, errors);
+    checkStmt(s->child(1), st, sc, active, errors);
     return;
   }
 
   if (s->type == "IfElseStmt") {
-    checkExpr(s->child(0), st, sc, errors);
-    checkStmt(s->child(1), st, sc, errors);
-    checkStmt(s->child(2), st, sc, errors);
+    checkExpr(s->child(0), st, sc, active, errors);
+    checkStmt(s->child(1), st, sc, active, errors);
+    checkStmt(s->child(2), st, sc, active, errors);
     return;
   }
 
   if (s->type == "ForStmt") {
     // `for` has its own scope in pass 1; enter the matching scope here.
     sc.enterNext(errors, s->lineno);
+    primeScope(sc.cur, active);
 
     // Init can be either assignment-style or declaration-style.
     Node *init = s->child(0);
     if (init) {
       if (init->type == "ForInitAssign") {
-        checkExpr(init->child(0), st, sc, errors);
-        checkExpr(init->child(2), st, sc, errors);
+        checkExpr(init->child(0), st, sc, active, errors);
+        checkExpr(init->child(2), st, sc, active, errors);
       } else if (init->type == "ForInitVar") {
         Node *vd = init->child(0);
         Node *init2 = vd ? vd->child(3) : nullptr;
         if (init2 && init2->type == "Init")
-          checkExpr(init2->child(0), st, sc, errors);
+          checkExpr(init2->child(0), st, sc, active, errors);
+        Node *id = vd ? vd->child(1) : nullptr;
+        if (id && id->type == "Id")
+          activateName(sc.cur, id->value, active);
       }
     }
 
     // Check condition expression when present.
     Node *cond = s->child(1);
     if (cond && cond->type != "ForCondEmpty")
-      checkExpr(cond, st, sc, errors);
+      checkExpr(cond, st, sc, active, errors);
 
     // Update contains assignment target/source expressions.
     Node *upd = s->child(2);
     if (upd && upd->type == "Update") {
-      checkExpr(upd->child(0), st, sc, errors);
-      checkExpr(upd->child(2), st, sc, errors);
+      checkExpr(upd->child(0), st, sc, active, errors);
+      checkExpr(upd->child(2), st, sc, active, errors);
     }
 
     // Loop body may contain nested scopes/usages.
-    checkStmt(s->child(3), st, sc, errors);
+    checkStmt(s->child(3), st, sc, active, errors);
 
     sc.exit();
     return;
@@ -359,7 +404,7 @@ static void checkStmt(Node *s, const SymbolTable &st, ScopeCursor &sc,
 
   if (s->type == "PrintStmt" || s->type == "ReadStmt" ||
       s->type == "ReturnStmt") {
-    checkExpr(s->child(0), st, sc, errors);
+    checkExpr(s->child(0), st, sc, active, errors);
     return;
   }
 
@@ -371,6 +416,8 @@ void semanticAnalyze(Node *root, const SymbolTable &st, ErrorReporter &errors) {
     return;
 
   ScopeCursor sc(st);
+  ActiveNames active;
+  primeScope(sc.cur, active);
 
   Node *globals = root->child(0);
   Node *classes = root->child(1);
@@ -384,7 +431,10 @@ void semanticAnalyze(Node *root, const SymbolTable &st, ErrorReporter &errors) {
       Node *vd = gv->child(0);
       Node *init = vd ? vd->child(3) : nullptr;
       if (init && init->type == "Init")
-        checkExpr(init->child(0), st, sc, errors);
+        checkExpr(init->child(0), st, sc, active, errors);
+      Node *id = vd ? vd->child(1) : nullptr;
+      if (id && id->type == "Id")
+        activateName(sc.cur, id->value, active);
     }
   }
 
@@ -395,6 +445,7 @@ void semanticAnalyze(Node *root, const SymbolTable &st, ErrorReporter &errors) {
         continue;
 
       sc.enterNext(errors, cd->lineno);
+      primeScope(sc.cur, active);
 
       Node *body = cd->child(1);
       if (body && body->type == "ClassBody") {
@@ -407,14 +458,15 @@ void semanticAnalyze(Node *root, const SymbolTable &st, ErrorReporter &errors) {
             Node *vd = mem->child(0);
             Node *init = vd ? vd->child(3) : nullptr;
             if (init && init->type == "Init")
-              checkExpr(init->child(0), st, sc, errors);
+              checkExpr(init->child(0), st, sc, active, errors);
             continue;
           }
 
           // Validate method body with method scope active.
           if (mem->type == "MethodDecl") {
             sc.enterNext(errors, mem->lineno);
-            checkStmt(mem->child(3), st, sc, errors);
+            primeScope(sc.cur, active);
+            checkStmt(mem->child(3), st, sc, active, errors);
             sc.exit();
           }
         }
@@ -427,7 +479,8 @@ void semanticAnalyze(Node *root, const SymbolTable &st, ErrorReporter &errors) {
   // Validate entry-point body in its method scope.
   if (entry && entry->type == "Entry") {
     sc.enterNext(errors, entry->lineno);
-    checkStmt(entry->child(1), st, sc, errors);
+    primeScope(sc.cur, active);
+    checkStmt(entry->child(1), st, sc, active, errors);
     sc.exit();
   }
 }

@@ -1,0 +1,16 @@
+class Shadowing {
+  value: int
+
+  compute(seed: int): int {
+    volatile local: int := seed
+    {
+      volatile local: int := 5
+    }
+    return local
+  }
+}
+
+main(): int {
+  print(Shadowing().compute(3))
+  return 0
+}
